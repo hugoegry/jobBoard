@@ -37,7 +37,7 @@
 [![Express](https://custom-icon-badges.demolab.com/badge/Express-000000?logo=express&logoColor=white)](#)
 [![PostgreSQL](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#)
 [![NodeJs](https://img.shields.io/badge/node.js-6DA55F?&logo=node.js&logoColor=white)](#)
-[![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio-5C2D91.svg?&logo=visualstudio&logoColor=white)](#)
+[![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white)](#)
 
 ---
 
