@@ -30,11 +30,9 @@
 
 ## 🏗 Built With
 
-[![React](https://custom-icon-badges.demolab.com/badge/React-61DAFB?logo=react&logoColor=black)](#)  
-[![Express](https://custom-icon-badges.demolab.com/badge/Express-000000?logo=express&logoColor=white)](#)  
-
-[![PostgreSQL](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#)
-[![PostgreSQL](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#)
+[![Java Script](https://img.shields.io/badge/Java%20Script-%23323330.svg?&logo=javascript&logoColor=%23F7DF1E)](#)
+[![React](https://custom-icon-badges.demolab.com/badge/React-61DAFB?logo=react&logoColor=black)](#)
+[![Express](https://custom-icon-badges.demolab.com/badge/Express-000000?logo=express&logoColor=white)](#)
 [![PostgreSQL](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)](#)
 [![NodeJs](https://img.shields.io/badge/node.js-6DA55F?&logo=node.js&logoColor=white)](#)
 [![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio-5C2D91.svg?&logo=visualstudio&logoColor=white)](#)
