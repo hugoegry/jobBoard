@@ -28,6 +28,8 @@
 
 ---
 
+<br>
+
 ## 🏗 Built With
 
 [![Java Script](https://img.shields.io/badge/Java%20Script-%23323330.svg?&logo=javascript&logoColor=%23F7DF1E)](#)
@@ -38,6 +40,20 @@
 [![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio-5C2D91.svg?&logo=visualstudio&logoColor=white)](#)
 
 ---
+
+<br>
+
+## 🤝 Collaborators
+
+<h3>Hugo Egry <a href="https://github.com/hugoegry"><img src="https://img.shields.io/badge/Git%20Hub-hugoegry-blue?style=social&logo=refinedgithub"></a></h3>
+
+<h3>Rewann Tannou <a href="https://github.com/RewannTannou"><img src="https://img.shields.io/badge/Git%20Hub-RewannTannou-blue?style=social&logo=refinedgithub"></a></h3>
+
+<h3>Manech Laguens <a href="https://github.com/Manech-Laguens"><img src="https://img.shields.io/badge/Git%20Hub-Manech&ndashLaguens-blue?style=social&logo=refinedgithub"></a></h3>
+
+---
+
+<br>
 
 ## 🛠 Installation
 
