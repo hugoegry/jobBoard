@@ -48,7 +48,7 @@
 
    // exemple package.json
    
-    //{
+    //  {
      //   "name": "firsttestexpres",
      //   "version": "1.0.0",
      //   "description": "",
@@ -56,7 +56,7 @@
      //   "scripts": {
      //   "start": "node server.js",
      //   "dev": "nodemon server.js"
-    //},
+    //  },
     //    "keywords": [],
     //    "author": "",
     //    "license": "ISC",
@@ -64,8 +64,8 @@
     //    "dependencies": {
     //    "dotenv": "^17.2.3",
     //    "express": "^5.1.0"
-    //},
+    //  },
     //    "devDependencies": {
     //    "nodemon": "^3.1.10"
-    //}
+    //  }
   //}
