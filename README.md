@@ -1,13 +1,13 @@
 # JobBoard 💼
 <p align="center">
   <!-- GitHub followers -->
-  <a href="https://github.com/<your-github-username>"><img src="https://img.shields.io/github/followers/<your-github-username>?style=social" alt="GitHub followers"></a>
+  <a href="https://github.com/hugoegry"><img src="https://img.shields.io/github/followers/hugoegry?style=social" alt="GitHub followers"></a>
   &nbsp;
-  <!-- Email -->
-  <a href="mailto:<your-email@example.com>"><img src="https://img.shields.io/badge/Email-<your-email@example.com>-blue?style=social&logo=gmail"></a>
+  <!--mail-->
+  <a href="mailto:hugo.egry@epitech.eu"><img src="https://img.shields.io/badge/Email-hugo.egry@epitech.eu-blue?style=social&logo=gmail"></a> <!--@ = maildotru-->
   &nbsp;
   <!-- Repo stars -->
-  <a href="https://github.com/<your-github-username>/jobboard/stargazers"><img src="https://img.shields.io/github/stars/<your-github-username>/jobboard?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/rishikagupta2468?tab=stars"><img src="https://img.shields.io/github/stars/hugoegry?style=social" alt="GitHub stars"></a>
 </p>
 <br>
 
@@ -32,7 +32,9 @@
 
 [![React](https://custom-icon-badges.demolab.com/badge/React-61DAFB?logo=react&logoColor=black)](#)  
 [![Express](https://custom-icon-badges.demolab.com/badge/Express-000000?logo=express&logoColor=white)](#)  
-[![PostgreSQL](https://custom-icon-badges.demolab.com/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)](#)  
+[![PostgreSQL](https://custom-icon-badges.demolab.com/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)](#)
+[![NodeJs](https://img.shields.io/badge/node.js-6DA55F?&logo=node.js&logoColor=white)](#)
+[![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio-5C2D91.svg?&logo=visualstudio&logoColor=white)](#)
 
 ---
 
