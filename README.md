@@ -47,27 +47,25 @@
    npm run {branch} // ex dev
 
    // exemple package.json
-/*
-   {
-      "name": "firsttestexpres",
-      "version": "1.0.0",
-      "description": "",
-      "main": "index.js",
-      "scripts": {
-      "start": "node server.js",
-      "dev": "nodemon server.js"
-  },
-      "keywords": [],
-      "author": "",
-      "license": "ISC",
-      "type": "commonjs",
-      "dependencies": {
-      "dotenv": "^17.2.3",
-      "express": "^5.1.0"
-  },
-      "devDependencies": {
-      "nodemon": "^3.1.10"
-  }
-}
-*/
    
+  //{
+   //   "name": "firsttestexpres",
+   //   "version": "1.0.0",
+   //   "description": "",
+   //   "main": "index.js",
+   //   "scripts": {
+   //   "start": "node server.js",
+   //   "dev": "nodemon server.js"
+  //},
+  //    "keywords": [],
+  //    "author": "",
+  //    "license": "ISC",
+  //    "type": "commonjs",
+  //    "dependencies": {
+  //    "dotenv": "^17.2.3",
+  //    "express": "^5.1.0"
+  //},
+  //    "devDependencies": {
+  //    "nodemon": "^3.1.10"
+  //}
+//}
