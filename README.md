@@ -30,6 +30,7 @@
 
 ## 🏗 Built With
 
+[![Visual Studio](https://custom-icon-badges.demolab.com/badge/Visual%20Studio-5C2D91.svg?&logo=visualstudio&logoColor=white)](#)
 [![React](https://custom-icon-badges.demolab.com/badge/React-61DAFB?logo=react&logoColor=black)](#)  
 [![Express](https://custom-icon-badges.demolab.com/badge/Express-000000?logo=express&logoColor=white)](#)  
 [![PostgreSQL](https://custom-icon-badges.demolab.com/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)](#)
