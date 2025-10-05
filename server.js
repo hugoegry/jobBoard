@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 8085;
+const PORT = process.env.PORT || 80;
 
 // Servir le frontend build
 app.use(express.static(path.join(__dirname, "public")));
