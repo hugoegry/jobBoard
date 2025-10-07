@@ -22,7 +22,7 @@ export class BaseModel {
   static init() {
     if (!BaseModel.pool) {
       BaseModel.pool = new Pool({
-        host: process.env.DB_HOST || 'http://92.88.3.200',
+        host: process.env.DB_HOST || '92.88.3.200',
         user: process.env.DB_USER || 'hugo.egry@epitech.eu',
         password: process.env.DB_PASS || 'Azertyuiop123',
         database: process.env.DB_NAME || 'jobboard',
@@ -185,4 +185,19 @@ export class BaseModel {
     const result = await BaseModel.query(sql, values);
     return result;
   }
+
+
+  // SELECT column_name
+// FROM information_schema.columns
+// WHERE table_name = 'users';
+
+  /**
+   * Récupère toutes les colonnes de la table.
+   * @async
+   * @param {string} table - Nom de la table
+   * @returns {Promise<Array<string>>} Liste des colonnes
+   */
+    static async getColumns(table) {
+        return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+    }
 }
