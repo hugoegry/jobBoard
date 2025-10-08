@@ -34,6 +34,10 @@ export class UserModel extends BaseModel {
         return await this.select(this.table, {}, ['id']);
     }
 
+    static async findAllUsers(element) {// juste pour test
+        return await this.select(element, {});
+    }
+
     /**
      * Recherche un utilisateur par id.
      * 

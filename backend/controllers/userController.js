@@ -171,7 +171,7 @@ export class UserController {
 
   static async getjob(req, res) {
     try {
-      const users = await UserModel.selectAll('offer');
+      const users = await UserModel.findAllUsers('offer');
       res.json(users);
     } catch (err) {
       res.status(500).json({ error: err.message });
