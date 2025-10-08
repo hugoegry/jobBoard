@@ -16,7 +16,12 @@ CREATE TABLE users (
   profile JSONB,
   role website_role DEFAULT 'user',
   created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  login_metadata JSONB DEFAULT '{
+        "login_attempts": 0,
+        "lock_count": 0,
+        "lock_until": null
+    }'::JSONB
 );
 
 INSERT INTO users (email, password, last_name, first_name, phone, profile, role)
@@ -143,3 +148,30 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER users_update_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
 CREATE TRIGGER companies_update_at BEFORE UPDATE ON companies FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
 CREATE TRIGGER offers_update_at BEFORE UPDATE ON offers FOR EACH ROW EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+
+---------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION reset_user_login_metadata_after_session()
+RETURNS trigger AS $$
+BEGIN
+    UPDATE users
+    SET login_metadata = DEFAULT
+    WHERE id = NEW.id_user;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_reset_login_metadata_tmp_session
+AFTER INSERT ON tmp_session
+FOR EACH ROW
+EXECUTE FUNCTION reset_user_login_metadata_after_session();
+
+
+CREATE TRIGGER trg_reset_login_metadata_const_session
+AFTER INSERT ON const_session
+FOR EACH ROW
+EXECUTE FUNCTION reset_user_login_metadata_after_session();

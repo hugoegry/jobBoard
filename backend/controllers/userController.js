@@ -1,3 +1,4 @@
+import { json } from 'express';
 import { UserModel } from '../models/UserModel.js';
 
 export class UserController {
@@ -62,11 +63,11 @@ export class UserController {
       }
     }
 
-    static async authUser(req, res) {
+    static async auth(req, res) { 
       try {
-        console.log('Requête reçue :', req.method, req.url);
+        //console.log('Requête reçue :', req.method, req.url);
         const params = Object.keys(req.body || {}).length ? req.body : (req.query || {});
-        console.log('Params reçus :', params);
+        //console.log('Params reçus :', params);
 
         if (!Object.keys(params).length) {
           return res.status(400).json({ error: 'Missing parameters' });
@@ -76,28 +77,52 @@ export class UserController {
           return res.status(400).json({ error: 'Missing email or password' });
         }
 
-        const user = await UserModel.findByEmail(params.email);
-        if (!user?.length) {
+        const users = await UserModel.findByEmail(params.email, true);
+        if (!users?.length) { 
           return res.status(404).json({ error: 'User not found' });
         }
-        user = user[0];
+        const user = users[0];
+
+        let login_metadata = user.login_metadata;
+        const now = new Date();
+        if (login_metadata.lock_until && new Date(login_metadata.lock_until) > now) {
+          return res.status(403).json({ error: 'Account is temporarily locked. Try again later.' });
+        } else if (login_metadata.lock_until !== null) {
+          login_metadata.lock_until = null;
+        }
+
         if (user.password !== params.password) {
+          // incrementer le nombre de tentative de connexion \\ returne ban time si trop de tentative \\
+          login_metadata.login_attempts = (login_metadata.login_attempts || 0) + 1;
+          if (login_metadata.login_attempts >= 5) {
+            login_metadata.lock_count = (login_metadata.lock_count || 0) + 1;
+            const lockDuration = 5 * login_metadata.lock_count;
+            const now = new Date();
+            const lockUntil = new Date(now.getTime() + lockDuration * 60_000); // 
+            login_metadata.lock_until = lockUntil.toISOString();
+            login_metadata.login_attempts = 0; // reset attempts after locking
+          }
+          const updatedUser = await UserModel.updateUser({'login_metadata': login_metadata}, {'id': user.id});
           return res.status(401).json({ error: 'Invalid password' });
         }
         delete user.password; // on ne renvoie pas le mot de passe
-
         if (params.remenber_me === true && !params.fingerprint) {
           return res.status(400).json({ error: 'Missing fingerprint for remember me' });
         }
 
-        // si les deux mp sont ok on insert un insert une session en bdd \\
-        // insertion de la session ici ...
-
-        user.session_token = 'session_token'; // a retour de requette
-        const userSession = await UserModel.createUserSession();
-        console.log('User session created:', userSession);
-
-
+        let dataForSession = {'id_user': user.id};
+        const sessionTable = (params.remember_me === true) ? 'const_session' : 'tmp_session';
+        if(params.remenber_me === true) {
+          dataForSession.fingerprint = params.fingerprint;
+          res.cookie('session_token', token, {
+            httpOnly: true,     // le cookie n’est pas accessible par JS côté client
+            secure: false,     //seulement en HTTPS
+            sameSite: 'Strict', //  empeche les attaques CSRF
+            maxAge: 315360000000
+          });
+        }
+        user.session_token = await UserModel.createUserSession(dataForSession, sessionTable);
+        // triguuger pour remettre a 0 les tentative de connexion \\
         res.json(user);
       } catch (err) { 
         res.status(500).json({ error: err.message });
@@ -143,4 +168,14 @@ export class UserController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  static async getjob(req, res) {
+    try {
+      const users = await UserModel.selectAll('offer');
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+    
 }

@@ -12,7 +12,11 @@ router.get('/', UserController.listUsers);
 // GET /users/search?email=... -> recherche un utilisateur par email
 router.get('/search', UserController.getUser);
 
+router.get('/auth', UserController.auth); // authentification principale \\
+
 router.get('/testreou', UserController.getnumber);
+
+router.get('/testreou2', UserController.getjob);
 // POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body)
 router.post('/search', UserController.getUser); // deprecated
 
@@ -30,3 +34,5 @@ export default router;
 
 
 // http://localhost:4000/users
+
+// nom // poste // type de contrat 

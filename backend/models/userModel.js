@@ -68,8 +68,9 @@ export class UserModel extends BaseModel {
      * console.log(user);
      * // => { id: 7 } ou null
      */
-    static async findByEmail(email) {
-        return await this.select(this.table, { 'email': email}, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
+    static async findByEmail(email, passwordincluded = false) {
+        const includedFields = passwordincluded ? ['id', 'email', 'password', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'] : ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'];
+        return await this.select(this.table, { 'email': email}, includedFields);
     }
 
     /**
@@ -93,8 +94,7 @@ export class UserModel extends BaseModel {
     }
 
 
-    static async createUserSession(data, table='tmp_usersession') {
-        //delete data.tableName;
+    static async createUserSession(data, table='tmp_session') {
         return await this.insert(table, data);
     }
 

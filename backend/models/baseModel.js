@@ -140,7 +140,7 @@ export class BaseModel {
    * @example
    * await model.update('users', { active: false }, { id: 42 });
    */
-  static async update(table, data = {}, conditions = {}, returning = 'id') {
+  static async update1(table, data = {}, conditions = {}, returning = 'id') {
     const keys = Object.keys(data);
     const setClauses = keys.map((k, i) => `"${k}" = $${i + 1}`).join(', ');
     const values = Object.values(data);
@@ -161,6 +161,44 @@ export class BaseModel {
     const result = await BaseModel.query(sql, values);
     return result;
   }
+
+  static async update(table, data = {}, conditions = {}, returning = 'id') {
+    const keys = Object.keys(data);
+    const setClauses = [];
+    const values = [];
+
+    for (const [i, key] of keys.entries()) {
+      let value = data[key];
+
+      if (typeof value === 'object' && value !== null) {
+        // Si c'est un objet → on le convertit en JSONB
+        value = JSON.stringify(value);
+        setClauses.push(`"${key}" = $${i + 1}::jsonb`);
+      } else {
+        setClauses.push(`"${key}" = $${i + 1}`);
+      }
+
+      values.push(value);
+    }
+
+    let sql = `UPDATE "${table}" SET ${setClauses.join(', ')}`;
+
+    if (Object.keys(conditions).length) {
+      const offset = values.length;
+      const where = Object.entries(conditions)
+        .map(([k, v], i) => {
+          values.push(v);
+          return `"${k}" = $${offset + i + 1}`;
+        })
+        .join(' AND ');
+      sql += ` WHERE ${where}`;
+    }
+
+    sql += ` RETURNING ${returning}`;
+    const result = await BaseModel.query(sql, values);
+    return result;
+  }
+
 
   /**
    * Supprime un ou plusieurs enregistrements d’une table.
