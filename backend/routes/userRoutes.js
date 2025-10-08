@@ -1,5 +1,5 @@
 import express from 'express';
-import { UserController } from '../controllers/UserController.js';
+import { UserController } from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -7,7 +7,14 @@ const router = express.Router();
 router.get('/', UserController.listUsers);
 
 // GET /users/:id -> détails d’un utilisateur
-router.get('/:id', UserController.getUser);
+//router.get('/:id', UserController.getUser); // old
+
+// GET /users/search?email=... -> recherche un utilisateur par email
+router.get('/search', UserController.getUser);
+
+router.get('/testreou', UserController.getnumber);
+// POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body)
+router.post('/search', UserController.getUser); // deprecated
 
 // POST /users -> créer un utilisateur
 router.post('/', UserController.createUser);

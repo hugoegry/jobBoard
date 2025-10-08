@@ -4,17 +4,48 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS pg_trgm; -- trigram pour recherche partielle
 CREATE EXTENSION IF NOT EXISTS btree_gist; -- pour certains indexes si nécessaire
 
+CREATE TYPE website_role AS ENUM ('owner', 'admin', 'user');
 -- USERS
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT UNIQUE,
-  password TEXT,
-  last_name TEXT,
-  first_name TEXT,
+  id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  first_name TEXT NOT NULL,
   phone TEXT,
   profile JSONB,
+  role website_role DEFAULT 'user',
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+INSERT INTO users (email, password, last_name, first_name, phone, profile, role)
+VALUES
+('john.doe@example.com', 'hash$2b$10$Jp5ZsE2example12345678', 'Doe', 'John', '+33601020304',
+ null, 'user'),
+
+('jane.smith@example.com', 'hash$2b$10$Jp5ZsE2example87654321', 'Smith', 'Jane', '+33698765432',
+ null, 'user'),
+
+('admin@example.com', 'hash$2b$10$Adm1nP@sswordExample', 'Super', 'Admin', NULL,
+ null, 'admin'),
+
+('maria.rossi@example.com', 'hash$2b$10$TestPassMaria1234', 'Rossi', 'Maria', '+393481112233',
+ null, 'admin'),
+
+('test.user@example.com', 'hash$2b$10$DemoHashExample987654', 'User', 'Test', NULL,
+ null, 'user');
+
+
+CREATE TABLE tmp_session (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE const_session (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  finguerprint TEXT
 );
 
 CREATE TABLE document (

@@ -124,7 +124,7 @@ export class BaseModel {
                  VALUES (${placeholders})
                  RETURNING ${returning}`;
     const result = await BaseModel.query(sql, values);
-    return result[0] || null;
+    return result || null;
   }
 
    /**

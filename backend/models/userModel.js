@@ -49,8 +49,8 @@ export class UserModel extends BaseModel {
      * console.log(user);
      * // => { id: 7 } ou null
      */
-    static async findUserById(id) {
-        return await this.select(this.table, {'user_id': id}, ['user_id']);
+    static async findById(id) {
+        return await this.select(this.table, {'id': id}, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
     }
 
     /**
@@ -69,7 +69,7 @@ export class UserModel extends BaseModel {
      * // => { id: 7 } ou null
      */
     static async findByEmail(email) {
-        return await this.select(this.table, { 'email': email}, ['id']);
+        return await this.select(this.table, { 'email': email}, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
     }
 
     /**
@@ -89,7 +89,13 @@ export class UserModel extends BaseModel {
      * // => { id: 7 } ou null
      */
     static async findByEmailAndPassword(email, password) {
-        return await this.select(this.table, { 'email': email, 'password': password }, ['id']);
+        return await this.select(this.table, { 'email': email, 'password': password }, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
+    }
+
+
+    static async createUserSession(data, table='tmp_usersession') {
+        //delete data.tableName;
+        return await this.insert(table, data);
     }
 
 
