@@ -1,22 +1,64 @@
 import photoAccueil from "../asset/photoAccueil.jpg";
-import { useState } from "react";
+import photoLoupe from "../asset/loupe.png";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Accueil() {
+  const navigate = useNavigate();
   const [contract, setContract] = useState("");
+  const [nbAnnonce, setNbAnnonce] = useState(0);
+  const [poste, setPoste] = useState("");
+  const [lieu, setLieu] = useState("");
+
+  // Récupération du nombre d'annonces au montage
+  useEffect(() => {
+    fetch("http://localhost/api/user/testreou")
+      .then((res) => res.json())
+      .then((data) => {
+        setNbAnnonce(data.number);
+      })
+      .catch((err) => console.error("Erreur :", err));
+  }, []);
+  // offre emploie
+
+  const handleSearch = () => {
+    navigate("/jobs", { state: { poste, lieu, contract } });
+  };
 
   return (
     <section className="Ws-Section">
-      <img src={photoAccueil} alt="photoAccueil" />
-      <span>Notre job, vous aider à choisir le vôtre parmi</span>
+      <div className="Ws-img">
+        <img src={photoAccueil} alt="photoAccueil" />
+        <span className="spanTextJob">
+          Notre job,
+          <br />
+          vous aider à choisir le vôtre parmi <br />
+        </span>
+        <span className="spanNbAnnonce">{nbAnnonce}</span>
+        <span className="spanAnnonce">Annonce</span>
+      </div>
+
       <div className="Ws-SearchBar">
         <form>
           <div className="contactContainerElement">
-            <input id="posteInput" type="text" placeholder=" " />
+            <input
+              id="posteInput"
+              type="text"
+              placeholder=" "
+              value={poste}
+              onChange={(e) => setPoste(e.target.value)}
+            />
             <span>Type de Poste</span>
           </div>
 
           <div className="contactContainerElement">
-            <input id="lieuInput" type="text" placeholder=" " />
+            <input
+              id="lieuInput"
+              type="text"
+              placeholder=" "
+              value={lieu}
+              onChange={(e) => setLieu(e.target.value)}
+            />
             <span>Lieu</span>
           </div>
 
@@ -32,11 +74,20 @@ function Accueil() {
               <option value="CDI">CDI</option>
               <option value="CDD">CDD</option>
             </select>
-            {/* n'affiche le span que si une option est sélectionnée */}
             {contract && <span>Type de Contrat</span>}
           </div>
+
+          <button
+            type="button"
+            className="Ws-Btn-Submit"
+            id="Ws-Btn-Submit"
+            onClick={handleSearch}
+          >
+            Rechercher
+          </button>
         </form>
       </div>
+
       <div className="Ws-aboutUs"></div>
     </section>
   );
