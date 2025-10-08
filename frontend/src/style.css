@@ -1,0 +1,397 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  background: linear-gradient(50deg, #1e1e1e, #2a2a2a, #3b82f6);
+  color: #f5f5f5;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+/* ----- Header principal ----- */
+.Wk-header {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: rgba(
+    13,
+    13,
+    13,
+    0.9
+  ); /* légèrement transparent pour laisser passer le dégradé */
+  color: #f5f5f5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font-family: "Segoe UI", sans-serif;
+  animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ----- Logo ----- */
+.Wk-logo {
+  width: 150px;
+  height: auto;
+  margin-right: 15px;
+}
+
+/* ----- Titre ----- */
+.Wk-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin: 0;
+}
+
+/* ----- Menu principal gauche ----- */
+.Ul-Header {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.Il-Header {
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.3s;
+  color: #f5f5f5;
+}
+
+.Il-Header:hover {
+  color: #22d3ee;
+}
+
+/* ----- Menu burger ----- */
+.MenuContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.BurgerIcon {
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #f5f5f5;
+  transition: transform 0.3s ease, color 0.3s;
+}
+
+.BurgerIcon:hover {
+  transform: scale(1.1);
+  color: #8b5cf6;
+}
+
+.BurgerMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: #121212;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  border-radius: 8px;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.BurgerMenu li {
+  padding: 10px 20px;
+}
+
+.BurgerMenu li a {
+  text-decoration: none;
+  color: #f5f5f5;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.BurgerMenu li:hover a {
+  color: #3b82f6;
+}
+
+.MenuContainer:hover .BurgerMenu {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+/* Animation menu déroulant */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation slide-in top du header */
+@keyframes slide-in-top {
+  0% {
+    transform: translateY(-1000px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.Ws-Section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 50px auto;
+  color: #f5f5f5;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.6s ease;
+}
+
+/* ----- Image principale ----- */
+.Ws-Section img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ----- Barre de recherche ----- */
+.Ws-SearchBar * {
+  box-sizing: border-box;
+}
+.Ws-SearchBar {
+  margin-top: 10px;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  border-radius: 12px;
+  padding: 20px 30px;
+  backdrop-filter: blur(6px);
+  width: 90%;
+  max-width: 1000px;
+  height: 50px;
+  flex-wrap: wrap;
+}
+.Ws-SearchBar form {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+form .contactContainerElement {
+  position: relative;
+  display: flex;
+  width: 250px;
+  height: 80%;
+}
+
+form .contactContainerElement input,
+form .contactContainerElement select {
+  position: relative;
+  display: flex;
+  height: 40px;
+  min-height: 40px;
+  padding: 0px 10px;
+  font-size: 0.75rem;
+  border: 1px solid #a1a1aa;
+  border-radius: 15px;
+  width: 100%;
+  min-width: 100%;
+  background: transparent;
+  z-index: 2;
+  transition: all 0.4s ease-in-out;
+  color: #f5f5f5;
+}
+form .contactContainerElement select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid #a1a1aa;
+  color: #f5f5f5;
+  font-size: 1rem;
+  width: 200px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+form .contactContainerElement input:hover,
+form .contactContainerElement select:hover {
+  box-shadow: 0 5px 15px #007bff;
+}
+
+form .contactContainerElement span {
+  position: absolute;
+  display: flex;
+  transition: all 0.4s ease-in-out;
+  padding-left: 0.5px;
+  padding-right: 0.5px;
+}
+
+form .contactContainerElement input:valid + span,
+form .contactContainerElement select:valid + span {
+  top: -17px;
+  left: 5px;
+  z-index: 3;
+  font-size: 0.725rem;
+  transform: unset;
+}
+form .contactContainerElement input:placeholder-shown + span,
+form .contactContainerElement select:placeholder-shown + span {
+  top: 50%;
+  left: 50%;
+  font-size: 0.9rem;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+form .contactContainerElement input:focus,
+form .contactContainerElement select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  border: 3px #007bff solid;
+  box-shadow: 0 5px 15px #007bff;
+  color: #007bff;
+}
+form .contactContainerElement input:focus + span,
+form .contactContainerElement select:focus + span {
+  top: -17px;
+  left: 5px;
+  z-index: 3;
+  font-size: 0.725rem;
+  transform: unset;
+}
+
+form .contactContainerElement input:invalid,
+form .contactContainerElement select:invalid {
+  border: 2px red solid;
+  color: red;
+  box-shadow: 0 5px 15px red;
+}
+form .contactContainerElement input:invalid + span,
+form .contactContainerElement select:invalid + span {
+  color: red;
+}
+
+/* Style du select */
+form .contactContainerElement select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid #a1a1aa;
+  color: #f5f5f5;
+  font-size: 1rem;
+  width: 200px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+select option {
+  background-color: #2a2a2a; /* gris anthracite */
+  color: #f5f5f5; /* texte clair */
+}
+
+/* Correction spéciale pour Firefox */
+@-moz-document url-prefix() {
+  select option {
+    background-color: #2a2a2a !important;
+    color: #f5f5f5 !important;
+  }
+}
+
+/* Focus du select */
+.contactContainerElement select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 6px #3b82f6;
+  outline: none;
+}
+select option:first-child {
+  display: none;
+}
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 900px) {
+  .Ws-SearchBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .Ws-Input-WorkType,
+  .Ws-Select-Contract {
+    width: 100%;
+  }
+}
+
+/* ----- Footer principal ----- */
+.Ws-footer {
+  background-color: rgba(13, 13, 13, 0.9);
+  color: #f5f5f5;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #a1a1aa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ----- Liste du footer ----- */
+.Ws-UlFooter {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.Ws-LiFooter {
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s;
+  color: #f5f5f5;
+}
+
+.Ws-LiFooter:hover {
+  color: #3b82f6;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .Wk-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .Ul-Header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .Ws-UlFooter {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+}

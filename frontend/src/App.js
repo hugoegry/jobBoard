@@ -1,11 +1,15 @@
 import React from "react";
+import Header from "./component/header";
+import Accueil from "./pages/accueil";
+import Footer from "./component/footer";
 
 function App() {
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>React Frontend Test</h1>
-      <p>Backend disponible sur /api/hello</p>
-    </div>
+    <>
+      <Header />
+      <Accueil />
+      <Footer />
+    </>
   );
 }
 
