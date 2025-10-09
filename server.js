@@ -1,6 +1,3 @@
-
-//import { fileURLToPath } from "url";
-
 import express from "express";
 import path from "path";
 import cors from "cors";
@@ -25,8 +22,8 @@ const __dirname = path.dirname(__filename);
 // import userRoutes from "./backend/routes/userRoutes.js"; // OLD
 // app.use("/api/users", userRoutes); // OLD
 
-const allowedModules = ['User'];
-const preloadedModules = ["User"];
+const allowedModules = ['User', 'Offer'];
+const preloadedModules = ['User', 'Offer'];
 const routersCache = {};
 
 //  Préchargement au démarrage \\ 

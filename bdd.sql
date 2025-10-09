@@ -175,3 +175,28 @@ CREATE TRIGGER trg_reset_login_metadata_const_session
 AFTER INSERT ON const_session
 FOR EACH ROW
 EXECUTE FUNCTION reset_user_login_metadata_after_session();
+
+
+
+CREATE OR REPLACE VIEW v_offers_with_company AS
+SELECT
+    o.id AS offer_id,
+    o.company_id,
+    c.name AS company_name,
+    c.description AS company_description,
+    c.website AS company_website,
+    c.meta AS company_meta,
+    c.logo AS company_logo,
+    o.created_when,
+    o.title,
+    o.description AS offer_description,
+    o.location,
+    o.tags,
+    o.type,
+    o.external_url,
+    o.collect_application,
+    o.recruiter_email,
+    o.created_at AS offer_created_at,
+    o.updated_at AS offer_updated_at
+FROM offer o
+JOIN company c ON c.id = o.company_id;

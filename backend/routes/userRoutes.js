@@ -3,31 +3,34 @@ import { UserController } from '../controllers/userController.js';
 
 const router = express.Router();
 
-// GET /users -> liste des utilisateurs
-router.get('/', UserController.listUsers);
+//router.get('/', UserController.listUsers); // GET /users -> liste des utilisateurs
+//router.get('/:id', UserController.getUser); // GET /users/:id -> détails d’un utilisateur // old
 
-// GET /users/:id -> détails d’un utilisateur
-//router.get('/:id', UserController.getUser); // old
+// user \\
+router.get('/search', (req, res) => UserController.getUser(req, res)); // GET /users/search?email=... -> recherche un utilisateur par email
+//router.get('/user', (req, res) => MyController.getUser0(req, res));
 
-// GET /users/search?email=... -> recherche un utilisateur par email
-router.get('/search', UserController.getUser);
+router.post('/search', UserController.getUser); // POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body) // deprecated \\
 
-router.get('/auth', UserController.auth); // authentification principale \\
+router.get('/update', (req, res) => UserController.updateUser(req, res));
+router.put('/', (req, res) => UserController.updateUser(req, res));
 
+
+router.post('/', UserController.createUser); // POST /users -> créer un utilisateur
+
+
+router.put('/:id', UserController.updateUser); // PUT /users/:id -> mettre à jour un utilisateur
+
+router.delete('/:id', UserController.deleteUser); // DELETE /users/:id -> supprimer un utilisateur
+
+
+// just for test \\
 router.get('/testreou', UserController.getnumber);
 
 router.get('/testreou2', UserController.getjob);
-// POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body)
-router.post('/search', UserController.getUser); // deprecated
 
-// POST /users -> créer un utilisateur
-router.post('/', UserController.createUser);
-
-// PUT /users/:id -> mettre à jour un utilisateur
-router.put('/:id', UserController.updateUser);
-
-// DELETE /users/:id -> supprimer un utilisateur
-router.delete('/:id', UserController.deleteUser);
+// authentication \\
+router.get('/auth', UserController.auth); // authentification principale \\
 
 // Obligatoire : export par défaut pour le lazy loader
 export default router;

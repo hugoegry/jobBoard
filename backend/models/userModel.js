@@ -7,12 +7,16 @@ export class UserModel extends BaseModel {
         return await this.insert(this.table, data);
     }
 
-    static async updateUser(updateData, conditions) {
-        return await this.update(this.table, updateData, conditions);
+    static async updateUser(field, param) {
+        return await this.update(this.table, field, param);
     }
 
     static async deleteUser(conditions) {
         return await this.delete(this.table, conditions);
+    }
+
+    static async findUser(params, fieleds) {
+        return await this.select(this.table, params, fieleds);
     }
 
 
@@ -37,6 +41,7 @@ export class UserModel extends BaseModel {
     static async findAllUsers(element) {// juste pour test
         return await this.select(element, {});
     }
+
 
     /**
      * Recherche un utilisateur par id.

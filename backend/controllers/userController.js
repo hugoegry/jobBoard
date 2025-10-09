@@ -1,30 +1,14 @@
 import { json } from 'express';
 import { UserModel } from '../models/UserModel.js';
+import { BaseController } from './baseController.class.js';
 
-export class UserController {
+export class UserController extends BaseController {
     static table = 'users';
-    static components = UserModel.getColumns(this.table);
-
-    /**
-     * Filtre un objet pour ne garder que les clés présentes dans la liste de colonnes.
-     * @param {Object} source - Objet à filtrer (ex: req.params, req.body)
-     * @param {Array<string>} columns - Liste des colonnes valides
-     * @returns {Object} Objet filtré
-     */
-    static filterValidColumns(source, columns) {
-        return Object.fromEntries(
-            Object.entries(source).filter(([key]) => columns.includes(key))
-        );
-    }
-    
-    static async listUsers(req, res) {
-        try {
-            const users = await UserModel.selectAll('users');
-            res.json(users);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    }
+    static tableColumns = UserModel.getColumns(this.table);
+    static allowedParams = ['id', 'email', 'first_name', 'last_name'];
+    static lockedParams = ['password', 'login_metadata'];
+    static lockedFields = ['password', 'login_metadata'];
+  
 
     static async getUser(req, res) {
       try {
@@ -34,24 +18,9 @@ export class UserController {
         const params = Object.keys(body).length ? body : query;
         console.log('Params reçus :', params);
 
-        if (!Object.keys(params).length) {
-          return res.status(400).json({ error: 'Missing parameters' });
-        }
-        const allowedParams = ['id', 'email', 'username', 'phone'];
-        const filtredParams = Object.keys(params).filter(k => allowedParams.includes(k));
-
-        if (!filtredParams.length) {
-          return res.status(400).json({ error: 'No supported search keys provided' });
-        }
-
-        const methodName = 'findBy' + filtredParams.map(k => k[0].toUpperCase() + k.slice(1)).join('And');
-
-        if (typeof UserModel[methodName] !== 'function') {
-          return res.status(400).json({ error: `Method not implemented: ${methodName}` });
-        }
-  
-        const values = filtredParams.map(k => params[k]); // Prépare les valeurs dans le même ordre que les clés
-        const user = await UserModel[methodName](...values); // Appel dynamique de la méthode
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields);
+        console.log('Params filtrés :', filtredParams, 'Fields filtrés :', filtredFields);
+        const user = await UserModel.findUser(filtredParams, filtredFields); // Appel dynamique de la méthode \\
 
         if (!user?.length) {
           return res.status(404).json({ error: 'User not found' });
@@ -63,6 +32,52 @@ export class UserController {
       }
     }
 
+    static async updateUser(req, res) {
+      try {
+        console.log('Requête reçue :', req.method, req.url);
+        const body = req.body || {};
+        const query = req.query || {};
+        const params = Object.keys(body).length ? body : query;
+        console.log('Params reçus :', params);
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
+        const returnedData = await UserModel.updateUser(filtredFields, filtredParams);
+        res.status(201).json(returnedData);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+    static async createUser(req, res) {
+      try {
+
+        
+        const user = await UserModel.insert('users', req.body);
+        res.status(201).json(user);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static async auth(req, res) { 
       try {
         //console.log('Requête reçue :', req.method, req.url);
@@ -70,7 +85,7 @@ export class UserController {
         //console.log('Params reçus :', params);
 
         if (!Object.keys(params).length) {
-          return res.status(400).json({ error: 'Missing parameters' });
+          return res.status(400).json({ error: 'Missing parameters'});
         }
 
         if (!params.email || !params.password || !params.remenber_me) {
@@ -122,30 +137,11 @@ export class UserController {
           });
         }
         user.session_token = await UserModel.createUserSession(dataForSession, sessionTable);
-        // triguuger pour remettre a 0 les tentative de connexion \\
         res.json(user);
       } catch (err) { 
         res.status(500).json({ error: err.message });
       }
     }
-
-  static async createUser(req, res) {
-    try {
-      const user = await UserModel.insert('users', req.body);
-      res.status(201).json(user);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-
-  static async updateUser(req, res) {
-    try {
-      const user = await UserModel.update('users', req.body, 'id=$1', [req.params.id]);
-      res.json(user);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
 
   static async deleteUser(req, res) {
     try {
@@ -158,8 +154,67 @@ export class UserController {
 
 
 
+    // OLD \\
+    static async getUserV1(req, res) { // old
+      try {
+        console.log('Requête reçue :', req.method, req.url);
+        const body = req.body || {};
+        const query = req.query || {};
+        const params = Object.keys(body).length ? body : query;
+        console.log('Params reçus :', params);
 
-  // ZONE TEST 
+        if (!Object.keys(params).length) {
+          return res.status(400).json({ error: 'Missing parameters' });
+        }
+
+
+        const filtredParams = Object.keys(params).filter(k => allowedParams.includes(k));
+
+        if (!filtredParams.length) {
+          return res.status(400).json({ error: 'No supported search keys provided' });
+        }
+
+        const methodName = 'findBy' + filtredParams.map(k => k[0].toUpperCase() + k.slice(1)).join('And');
+
+        if (typeof UserModel[methodName] !== 'function') {
+          return res.status(400).json({ error: `Method not implemented: ${methodName}` });
+        }
+  
+        const values = filtredParams.map(k => params[k]); // Prépare les valeurs dans le même ordre que les clés
+        const user = await UserModel[methodName](...values); // Appel dynamique de la méthode
+
+        if (!user?.length) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+    static async listUsers(req, res) { // old
+        try {
+            const users = await UserModel.selectAll('users');
+            res.json(users);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    static async updateUserV1(req, res) {
+      try {
+        const user = await UserModel.update('users', req.body, 'id=$1', [req.params.id]);
+        res.json(user);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+
+
+
+  // ZONE TEST \\
 
   static async getnumber(req, res) {
     try {

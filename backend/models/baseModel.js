@@ -72,7 +72,7 @@ export class BaseModel {
    */
   static async select(table, conditions = {}, columns = ['*'], extraSql = '') {
     // Validation simple pour éviter injection dans le nom de colonnes
-    const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);
+    const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);// methode de regex
 
     // Construction des colonnes à sélectionner
     const selectCols = Array.isArray(columns) && columns.length ? columns.map(col => (col === '*' ? '*' : `"${col}"`)).join(', ') : '*';
@@ -171,8 +171,7 @@ export class BaseModel {
       let value = data[key];
 
       if (typeof value === 'object' && value !== null) {
-        // Si c'est un objet → on le convertit en JSONB
-        value = JSON.stringify(value);
+        value = JSON.stringify(value); // Si c'est un objet  on le convertit en JSONB \\
         setClauses.push(`"${key}" = $${i + 1}::jsonb`);
       } else {
         setClauses.push(`"${key}" = $${i + 1}`);
@@ -189,12 +188,13 @@ export class BaseModel {
         .map(([k, v], i) => {
           values.push(v);
           return `"${k}" = $${offset + i + 1}`;
-        })
-        .join(' AND ');
+        }).join(' AND ');
       sql += ` WHERE ${where}`;
     }
 
     sql += ` RETURNING ${returning}`;
+    console.log('Condfgfdgd', sql);
+    console.log('Values', values);
     const result = await BaseModel.query(sql, values);
     return result;
   }
@@ -235,7 +235,16 @@ export class BaseModel {
    * @param {string} table - Nom de la table
    * @returns {Promise<Array<string>>} Liste des colonnes
    */
+    // static async getColumns(table) {
+    //     return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+    // }
+
     static async getColumns(table) {
-        return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+      const result = await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+      if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {// On transforme le tableau d'objets en tableau de noms de colonnes
+        return result.map(col => col.column_name);
+      }
+      return [];
     }
+
 }
