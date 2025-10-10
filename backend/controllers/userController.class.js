@@ -9,30 +9,6 @@ export class UserController extends BaseController {
     static lockedParams = ['password', 'login_metadata'];
     static lockedFields = ['password', 'login_metadata'];
   
-export class UserController {
-  static table = "users";
-  static components = UserModel.getColumns(this.table);
-
-  /**
-   * Filtre un objet pour ne garder que les clés présentes dans la liste de colonnes.
-   * @param {Object} source - Objet à filtrer (ex: req.params, req.body)
-   * @param {Array<string>} columns - Liste des colonnes valides
-   * @returns {Object} Objet filtré
-   */
-  static filterValidColumns(source, columns) {
-    return Object.fromEntries(
-      Object.entries(source).filter(([key]) => columns.includes(key))
-    );
-  }
-
-  static async listUsers(req, res) {
-    try {
-      const users = await UserModel.selectAll("users");
-      res.json(users);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
 
     static async get(req, res) {
       try {
@@ -120,24 +96,19 @@ export class UserController {
 
 
 
-  static async auth(req, res) {
-    try {
-      //console.log('Requête reçue :', req.method, req.url);
-      const params = Object.keys(req.body || {}).length
-        ? req.body
-        : req.query || {};
-      //console.log('Params reçus :', params);
+    static async auth(req, res) { 
+      try {
+        //console.log('Requête reçue :', req.method, req.url);
+        const params = Object.keys(req.body || {}).length ? req.body : (req.query || {});
+        //console.log('Params reçus :', params);
 
         if (!Object.keys(params).length) {
           return res.status(400).json({ error: 'Missing parameters'});
         }
-      if (!Object.keys(params).length) {
-        return res.status(400).json({ error: "Missing parameters" });
-      }
 
-      if (!params.email || !params.password || !params.remenber_me) {
-        return res.status(400).json({ error: "Missing email or password" });
-      }
+        if (!params.email || !params.password || !params.remenber_me) {
+          return res.status(400).json({ error: 'Missing email or password' });
+        }
 
         const users = await ClassModel.findByEmail(params.email, true);
         if (!users?.length) { 
@@ -145,18 +116,13 @@ export class UserController {
         }
         const user = users[0];
 
-      let login_metadata = user.login_metadata;
-      const now = new Date();
-      if (
-        login_metadata.lock_until &&
-        new Date(login_metadata.lock_until) > now
-      ) {
-        return res
-          .status(403)
-          .json({ error: "Account is temporarily locked. Try again later." });
-      } else if (login_metadata.lock_until !== null) {
-        login_metadata.lock_until = null;
-      }
+        let login_metadata = user.login_metadata;
+        const now = new Date();
+        if (login_metadata.lock_until && new Date(login_metadata.lock_until) > now) {
+          return res.status(403).json({ error: 'Account is temporarily locked. Try again later.' });
+        } else if (login_metadata.lock_until !== null) {
+          login_metadata.lock_until = null;
+        }
 
         if (user.password !== params.password) {
           // incrementer le nombre de tentative de connexion \\ returne ban time si trop de tentative \\
@@ -197,7 +163,7 @@ export class UserController {
 
   static async deleteUserV1(req, res) {
     try {
-      await UserModel.delete("users", "id=$1", [req.params.id]);
+      await UserModel.delete('users', 'id=$1', [req.params.id]);
       res.status(204).end();
     } catch (err) {
       res.status(500).json({ error: err.message });
