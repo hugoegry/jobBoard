@@ -70,9 +70,13 @@ function Accueil() {
               onChange={(e) => setContract(e.target.value)}
             >
               <option value="">Type de Contrat</option>
-              <option value="Alternance">Alternance</option>
-              <option value="CDI">CDI</option>
-              <option value="CDD">CDD</option>
+              <option value="alternance">Alternance</option>
+              <option value="cdi">CDI</option>
+              <option value="cdd">CDD</option>
+              <option value="mi-temps">Mi-temps</option>
+              <option value="freelance">Freelance</option>
+              <option value="stage">Stage</option>
+              <option value="benevolat">Bénevolat</option>
             </select>
             {contract && <span>Type de Contrat</span>}
           </div>
