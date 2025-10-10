@@ -1,6 +1,14 @@
-import { json } from "express";
-import { UserModel } from "../models/UserModel.js";
+import { json } from 'express';
+import { UserModel } from '../models/UserModel.js';
+import { BaseController } from './baseController.class.js';
 
+export class UserController extends BaseController {
+    static table = 'users';
+    static tableColumns = UserModel.getColumns(this.table);
+    static allowedParams = ['id', 'email', 'first_name', 'last_name'];
+    static lockedParams = ['password', 'login_metadata'];
+    static lockedFields = ['password', 'login_metadata'];
+  
 export class UserController {
   static table = "users";
   static components = UserModel.getColumns(this.table);
@@ -34,6 +42,9 @@ export class UserController {
       const params = Object.keys(body).length ? body : query;
       console.log("Params reçus :", params);
 
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields);
+        console.log('Params filtrés :', filtredParams, 'Fields filtrés :', filtredFields);
+        const user = await UserModel.findUser(filtredParams, filtredFields); // Appel dynamique de la méthode \\
       if (!Object.keys(params).length) {
         return res.status(400).json({ error: "Missing parameters" });
       }
@@ -65,6 +76,57 @@ export class UserController {
         return res.status(404).json({ error: "User not found" });
       }
 
+        res.json(user);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+    static async updateUser(req, res) {
+      try {
+        console.log('Requête reçue :', req.method, req.url);
+        const body = req.body || {};
+        const query = req.query || {};
+        const params = Object.keys(body).length ? body : query;
+        console.log('Params reçus :', params);
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
+        const returnedData = await UserModel.updateUser(filtredFields, filtredParams);
+        res.status(201).json(returnedData);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+    static async createUser(req, res) {
+      try {
+
+        
+        const user = await UserModel.insert('users', req.body);
+        res.status(201).json(user);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       res.json(user);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -79,6 +141,9 @@ export class UserController {
         : req.query || {};
       //console.log('Params reçus :', params);
 
+        if (!Object.keys(params).length) {
+          return res.status(400).json({ error: 'Missing parameters'});
+        }
       if (!Object.keys(params).length) {
         return res.status(400).json({ error: "Missing parameters" });
       }
@@ -131,6 +196,23 @@ export class UserController {
           .json({ error: "Missing fingerprint for remember me" });
       }
 
+        let dataForSession = {'id_user': user.id};
+        const sessionTable = (params.remember_me === true) ? 'const_session' : 'tmp_session';
+        if(params.remenber_me === true) {
+          dataForSession.fingerprint = params.fingerprint;
+          res.cookie('session_token', token, {
+            httpOnly: true,     // le cookie n’est pas accessible par JS côté client
+            secure: false,     //seulement en HTTPS
+            sameSite: 'Strict', //  empeche les attaques CSRF
+            maxAge: 315360000000
+          });
+        }
+        user.session_token = await UserModel.createUserSession(dataForSession, sessionTable);
+        res.json(user);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
       let dataForSession = { id_user: user.id };
       const sessionTable =
         params.remember_me === true ? "const_session" : "tmp_session";
@@ -183,6 +265,69 @@ export class UserController {
     }
   }
 
+
+
+    // OLD \\
+    static async getUserV1(req, res) { // old
+      try {
+        console.log('Requête reçue :', req.method, req.url);
+        const body = req.body || {};
+        const query = req.query || {};
+        const params = Object.keys(body).length ? body : query;
+        console.log('Params reçus :', params);
+
+        if (!Object.keys(params).length) {
+          return res.status(400).json({ error: 'Missing parameters' });
+        }
+
+
+        const filtredParams = Object.keys(params).filter(k => allowedParams.includes(k));
+
+        if (!filtredParams.length) {
+          return res.status(400).json({ error: 'No supported search keys provided' });
+        }
+
+        const methodName = 'findBy' + filtredParams.map(k => k[0].toUpperCase() + k.slice(1)).join('And');
+
+        if (typeof UserModel[methodName] !== 'function') {
+          return res.status(400).json({ error: `Method not implemented: ${methodName}` });
+        }
+  
+        const values = filtredParams.map(k => params[k]); // Prépare les valeurs dans le même ordre que les clés
+        const user = await UserModel[methodName](...values); // Appel dynamique de la méthode
+
+        if (!user?.length) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+    static async listUsers(req, res) { // old
+        try {
+            const users = await UserModel.selectAll('users');
+            res.json(users);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    static async updateUserV1(req, res) {
+      try {
+        const user = await UserModel.update('users', req.body, 'id=$1', [req.params.id]);
+        res.json(user);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
+
+
+
+
+  // ZONE TEST \\
   // ZONE TEST
 
   static async getnumber(req, res) {
