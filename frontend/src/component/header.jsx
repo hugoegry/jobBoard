@@ -11,6 +11,9 @@ function Header() {
   const navigateToConnexion = () => {
     navigate("/connexion");
   };
+  const navigateToMyAccount = () => {
+    navigate("/MyAccount");
+  };
 
   return (
     <>
@@ -41,6 +44,11 @@ function Header() {
             </li>
             <li>
               <a href="#">S’inscrire</a>
+            </li>
+            <li>
+              <a href="#" onClick={navigateToMyAccount}>
+                Mon compte
+              </a>
             </li>
           </ul>
         </div>

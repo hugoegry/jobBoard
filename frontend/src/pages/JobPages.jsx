@@ -64,7 +64,7 @@ function JobPages() {
 
               <div className="Ws-DivTextJob">
                 <h2>{job.title}</h2>
-                <span>{job.company_name}</span>
+                <span>{job.company_name.toUpperCase()}</span>
                 <h4>
                   {job.location} ({job.type})
                 </h4>
@@ -74,6 +74,7 @@ function JobPages() {
               </div>
             </div>
             <div className="divAfterClick">
+              <p className="ACTags">{job.tags}</p>
               <h1 className="AfterClickTitle">Description</h1>
               <p>{job.offer_description}</p>
             </div>

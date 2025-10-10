@@ -2,18 +2,54 @@ import { useState } from "react";
 
 function FormConnexion() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isConnected, setIsConnected] = useState(
+    sessionStorage.getItem("isConnected") === "true"
+  );
 
   const handleToggle = () => {
     setIsSignUp(!isSignUp);
   };
-  useEffect(() => {
-    fetch("http://localhost/api/user/testreou")
-      .then((res) => res.json())
-      .then((data) => {
-        setNbAnnonce(data.number);
-      })
-      .catch((err) => console.error("Erreur :", err));
-  }, []);
+
+  // Fonction pour hacher le mot de passe avec SHA-256
+  const hashPassword = async (password) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  };
+
+  const handleLogin = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("mdp").value;
+
+    if (!email || !password) {
+      alert("Veuillez remplir tous les champs !");
+      return;
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    try {
+      const response = await fetch(
+        `http://localhost/api/user/auth?email=${email}&password=${hashedPassword}&remenber_me=false`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        // Stocker la session
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("isConnected", "true");
+        setIsConnected(true);
+        alert("Connexion réussie !");
+      } else {
+        alert("Identifiants invalides !");
+      }
+    } catch (err) {
+      console.error("Erreur :", err);
+      alert("Erreur lors de la connexion.");
+    }
+  };
 
   return (
     <div className="containerPageConnexion">
@@ -56,15 +92,15 @@ function FormConnexion() {
           <form method="POST" action="">
             <div id="containerSignIn" className="containerContentForm active">
               <h1>Connexion</h1>
-
               <span id="SKH-conexion-texte-left-web">
                 ou utilisez votre mot de passe et votre email
               </span>
-              <input type="email" name="email" placeholder="Email" />
+              <input id="email" type="email" name="email" placeholder="Email" />
               <input
                 type="password"
                 name="password"
                 placeholder="Mot de passe"
+                id="mdp"
               />
               <div className="containerRememberMe">
                 <input type="checkbox" id="rememberMe" name="rememberMe" />
@@ -73,7 +109,11 @@ function FormConnexion() {
               <a href="#" className="SKH-MDP-OUBLI">
                 Mot de passe oublié ?
               </a>
-              <button type="button" className="buttonStartAuth">
+              <button
+                type="button"
+                className="buttonStartAuth"
+                onClick={handleLogin}
+              >
                 Connexion
               </button>
             </div>

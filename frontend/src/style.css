@@ -504,9 +504,19 @@ select option:first-child {
   font-size: 1rem;
   color: #d4d4d4;
 }
+
 .AfterClickTitle {
   display: flex;
   justify-content: center;
+}
+.ACTags {
+  border: 1px solid;
+  background-color: rgba(146, 134, 134, 0.7);
+
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 /* ----- Form Connexion -----*/
 .containerPageConnexion {
@@ -951,6 +961,190 @@ select option:first-child {
     display: none;
   }
 }
+/*----- client part -----*/
+/* === Container principal === */
+.SectionAccountContainer {
+  width: 900px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.account-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 70%;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.account-container:hover {
+  transform: translateY(-2px);
+}
+
+/* === Titre === */
+.account-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b; /* Bleu-gris moderne */
+}
+
+/* === Labels === */
+.account-container label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #475569; /* gris doux */
+}
+
+/* === Champs de saisie === */
+.account-container input {
+  width: 80%;
+  max-width: 500px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #f8fafc;
+  color: #0f172a;
+  transition: all 0.25s ease;
+}
+
+.account-container input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.account-container input:disabled {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+/* === Zone fichier === */
+.file-section {
+  margin-top: 20px;
+}
+
+.file-section label {
+  font-weight: 500;
+  color: #475569;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.file-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.file-preview img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.file-preview a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.file-preview a:hover {
+  text-decoration: underline;
+}
+
+.no-file {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.file-input {
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* === Boutons === */
+.account-container button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Bouton modifier */
+.edit-button {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.edit-button:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: scale(1.02);
+}
+
+/* Bouton enregistrer */
+.save-button {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: scale(1.02);
+}
+
+/* Bouton annuler */
+.cancel-button {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.cancel-button:hover {
+  background: #e2e8f0;
+  transform: scale(1.02);
+}
+
+/* === Responsive === */
+@media (max-width: 500px) {
+  .account-container {
+    margin: 30px 20px;
+    padding: 20px;
+  }
+
+  .account-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .account-container input {
+    padding: 10px 12px;
+  }
+
+  .account-container button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
 /* ----- Footer principal ----- */
 .Ws-footer {
   background-color: rgba(13, 13, 13, 0.9);
