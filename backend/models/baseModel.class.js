@@ -70,7 +70,7 @@ export class BaseModel {
    * // Sélectionner tous les utilisateurs actifs avec leurs id et emails
    * await model.select('users', { active: true }, ['id', 'email'], 'ORDER BY created_at DESC');
    */
-  static async select(table, conditions = {}, columns = ['*'], extraSql = '') {
+  static async _select(table, conditions = {}, columns = ['*'], extraSql = '') {
     // Validation simple pour éviter injection dans le nom de colonnes
     const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);// methode de regex
 
@@ -116,7 +116,7 @@ export class BaseModel {
    * @example
    * await model.insert('users', { email: 'test@test.com', name: 'John' });
    */
-  static async insert(table, data = {}, returning = 'id') {
+  static async _insert(table, data = {}, returning = 'id') {
     const keys = Object.keys(data);
     const values = Object.values(data);
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -127,42 +127,8 @@ export class BaseModel {
     return result || null;
   }
 
-   /**
-   * Met à jour un ou plusieurs enregistrements dans une table.
-   *
-   * @async
-   * @param {string} table - Nom de la table
-   * @param {Object} data - Données à mettre à jour
-   * @param {Object} [conditions={}] - Conditions WHERE
-   * @param {string} [returning='id'] - Colonne(s) à retourner
-   * @returns {Promise<Array<Object>>} - Lignes affectées
-   *
-   * @example
-   * await model.update('users', { active: false }, { id: 42 });
-   */
-  static async update1(table, data = {}, conditions = {}, returning = 'id') {
-    const keys = Object.keys(data);
-    const setClauses = keys.map((k, i) => `"${k}" = $${i + 1}`).join(', ');
-    const values = Object.values(data);
 
-    let sql = `UPDATE "${table}" SET ${setClauses}`;
-    if (Object.keys(conditions).length) {
-      const offset = values.length;
-      const where = Object.entries(conditions)
-        .map(([k, v], i) => {
-          values.push(v);
-          return `"${k}" = $${offset + i + 1}`;
-        })
-        .join(' AND ');
-      sql += ` WHERE ${where}`;
-    }
-
-    sql += ` RETURNING ${returning}`;
-    const result = await BaseModel.query(sql, values);
-    return result;
-  }
-
-  static async update(table, data = {}, conditions = {}, returning = 'id') {
+  static async _update(table, data = {}, conditions = {}, returning = 'id') {
     const keys = Object.keys(data);
     const setClauses = [];
     const values = [];
@@ -211,7 +177,7 @@ export class BaseModel {
    * @example
    * await model.delete('users', { id: 5 });
    */
-  static async delete(table, conditions = {}) {
+  static async _delete(table, conditions = {}, returning = '*') {
     const values = [];
     const where = Object.entries(conditions)
       .map(([k, v], i) => {
@@ -219,7 +185,7 @@ export class BaseModel {
         return `"${k}" = $${i + 1}`;
       })
       .join(' AND ');
-    const sql = `DELETE FROM "${table}" WHERE ${where}`;
+    const sql = `DELETE FROM "${table}" WHERE ${where} RETURNING ${returning}`;
     const result = await BaseModel.query(sql, values);
     return result;
   }
@@ -246,5 +212,46 @@ export class BaseModel {
       }
       return [];
     }
+
+
+
+
+
+
+
+    /**
+   * Met à jour un ou plusieurs enregistrements dans une table.
+   *
+   * @async
+   * @param {string} table - Nom de la table
+   * @param {Object} data - Données à mettre à jour
+   * @param {Object} [conditions={}] - Conditions WHERE
+   * @param {string} [returning='id'] - Colonne(s) à retourner
+   * @returns {Promise<Array<Object>>} - Lignes affectées
+   *
+   * @example
+   * await model.update('users', { active: false }, { id: 42 });
+   */
+  static async update1(table, data = {}, conditions = {}, returning = 'id') {
+    const keys = Object.keys(data);
+    const setClauses = keys.map((k, i) => `"${k}" = $${i + 1}`).join(', ');
+    const values = Object.values(data);
+
+    let sql = `UPDATE "${table}" SET ${setClauses}`;
+    if (Object.keys(conditions).length) {
+      const offset = values.length;
+      const where = Object.entries(conditions)
+        .map(([k, v], i) => {
+          values.push(v);
+          return `"${k}" = $${offset + i + 1}`;
+        })
+        .join(' AND ');
+      sql += ` WHERE ${where}`;
+    }
+
+    sql += ` RETURNING ${returning}`;
+    const result = await BaseModel.query(sql, values);
+    return result;
+  }
 
 }

@@ -1,64 +1,82 @@
 import { json } from 'express';
-import { UserModel } from '../models/UserModel.js';
+import { UserModel as ClassModel } from '../models/userModel.class.js';
 import { BaseController } from './baseController.class.js';
 
 export class UserController extends BaseController {
     static table = 'users';
-    static tableColumns = UserModel.getColumns(this.table);
+    static tableColumns = ClassModel.getColumns(this.table);
     static allowedParams = ['id', 'email', 'first_name', 'last_name'];
     static lockedParams = ['password', 'login_metadata'];
     static lockedFields = ['password', 'login_metadata'];
   
 
-    static async getUser(req, res) {
+    static async get(req, res) {
       try {
-        console.log('Requête reçue :', req.method, req.url);
-        const body = req.body || {};
-        const query = req.query || {};
-        const params = Object.keys(body).length ? body : query;
-        console.log('Params reçus :', params);
-
+        const params = this.extractParams(req, res);
         const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields);
-        console.log('Params filtrés :', filtredParams, 'Fields filtrés :', filtredFields);
-        const user = await UserModel.findUser(filtredParams, filtredFields); // Appel dynamique de la méthode \\
-
-        if (!user?.length) {
-          return res.status(404).json({ error: 'User not found' });
+        const getValue = await ClassModel.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
+        if (!getValue?.length) {
+          return res.status(404).json({ error: `${this.table} not found`, status: `ERROR_NOT_FOUND` });
         }
 
-        res.json(user);
+        res.json(getValue);
       } catch (err) { 
         res.status(500).json({ error: err.message });
       }
     }
 
-    static async updateUser(req, res) {
+    static async update(req, res) {
       try {
-        console.log('Requête reçue :', req.method, req.url);
-        const body = req.body || {};
-        const query = req.query || {};
-        const params = Object.keys(body).length ? body : query;
-        console.log('Params reçus :', params);
+        const params = this.extractParams(req, res);
         const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
-        const returnedData = await UserModel.updateUser(filtredFields, filtredParams);
+        const returnedData = await ClassModel.update(filtredFields, filtredParams);
+        if (!returnedData?.length) {
+          return res.status(404).json({ error: `No ${this.table} records were updated.`, status: `ERROR_NOT_FOUND` });
+        }
         res.status(201).json(returnedData);
       } catch (err) { 
         res.status(500).json({ error: err.message });
       }
     }
 
-    static async createUser(req, res) {
+    static async create(req, res) {
       try {
-
-        
-        const user = await UserModel.insert('users', req.body);
-        res.status(201).json(user);
+        const params = this.extractParams(req, res);
+        const { filtredParams, _ } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' }, ['password']);
+        //const usersAlreadyExist = await ClassModel.findByEmail(filtredParams.email);
+        // triger verif email already existe \\
+        const returnedData = await ClassModel.create(filtredParams);
+        res.status(201).json(returnedData);
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
     }
 
 
+    static async delete(req, res) {
+      try {
+        const params = this.extractParams(req, res);
+        const { filtredParams, _ } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
+        const returnedData = await ClassModel.delete(filtredParams);
+        if (!returnedData?.length) {
+          return res.status(404).json({ error: `No ${this.table} records were deleted.`, status: `ERROR_NOT_FOUND`});
+        }
+        res.status(201).end(); // old 204
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
+    
+    // 👉 Le code 204 No Content signifie littéralement « succès sans contenu dans la réponse » — c’est un code HTTP conçu pour ne rien retourner.
+
+
+    static async getnumber(req, res) {
+      try {
+        res.json({number: 42});
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    }
 
 
 
@@ -92,7 +110,7 @@ export class UserController extends BaseController {
           return res.status(400).json({ error: 'Missing email or password' });
         }
 
-        const users = await UserModel.findByEmail(params.email, true);
+        const users = await ClassModel.findByEmail(params.email, true);
         if (!users?.length) { 
           return res.status(404).json({ error: 'User not found' });
         }
@@ -117,7 +135,7 @@ export class UserController extends BaseController {
             login_metadata.lock_until = lockUntil.toISOString();
             login_metadata.login_attempts = 0; // reset attempts after locking
           }
-          const updatedUser = await UserModel.updateUser({'login_metadata': login_metadata}, {'id': user.id});
+          const updatedUser = await ClassModel.update({'login_metadata': login_metadata}, {'id': user.id});
           return res.status(401).json({ error: 'Invalid password' });
         }
         delete user.password; // on ne renvoie pas le mot de passe
@@ -136,14 +154,14 @@ export class UserController extends BaseController {
             maxAge: 315360000000
           });
         }
-        user.session_token = await UserModel.createUserSession(dataForSession, sessionTable);
+        user.session_token = await ClassModel.createUserSession(dataForSession, sessionTable);
         res.json(user);
       } catch (err) { 
         res.status(500).json({ error: err.message });
       }
     }
 
-  static async deleteUser(req, res) {
+  static async deleteUserV1(req, res) {
     try {
       await UserModel.delete('users', 'id=$1', [req.params.id]);
       res.status(204).end();
@@ -176,12 +194,12 @@ export class UserController extends BaseController {
 
         const methodName = 'findBy' + filtredParams.map(k => k[0].toUpperCase() + k.slice(1)).join('And');
 
-        if (typeof UserModel[methodName] !== 'function') {
+        if (typeof ClassModel[methodName] !== 'function') {
           return res.status(400).json({ error: `Method not implemented: ${methodName}` });
         }
   
         const values = filtredParams.map(k => params[k]); // Prépare les valeurs dans le même ordre que les clés
-        const user = await UserModel[methodName](...values); // Appel dynamique de la méthode
+        const user = await ClassModel[methodName](...values); // Appel dynamique de la méthode
 
         if (!user?.length) {
           return res.status(404).json({ error: 'User not found' });
@@ -195,7 +213,7 @@ export class UserController extends BaseController {
 
     static async listUsers(req, res) { // old
         try {
-            const users = await UserModel.selectAll('users');
+            const users = await ClassModel.selectAll('users');
             res.json(users);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -204,33 +222,11 @@ export class UserController extends BaseController {
 
     static async updateUserV1(req, res) {
       try {
-        const user = await UserModel.update('users', req.body, 'id=$1', [req.params.id]);
+        const user = await ClassModel.update('users', req.body, 'id=$1', [req.params.id]);
         res.json(user);
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
     }
-
-
-
-
-  // ZONE TEST \\
-
-  static async getnumber(req, res) {
-    try {
-      res.json({number: 42});
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-
-  static async getjob(req, res) {
-    try {
-      const users = await UserModel.findAllUsers('offer');
-      res.json(users);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
     
 }

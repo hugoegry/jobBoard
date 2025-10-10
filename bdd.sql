@@ -186,17 +186,18 @@ SELECT
     c.description AS company_description,
     c.website AS company_website,
     c.meta AS company_meta,
-    c.logo AS company_logo,
+	c.logo AS company_logo,
     o.created_when,
     o.title,
     o.description AS offer_description,
     o.location,
     o.tags,
     o.type,
+    o.salary,
     o.external_url,
     o.collect_application,
     o.recruiter_email,
-    o.created_at AS offer_created_at,
-    o.updated_at AS offer_updated_at
-FROM offer o
+    o.created_when AS offer_created_when,
+    o.updated_when AS offer_updated_when
+FROM offers o
 JOIN company c ON c.id = o.company_id;

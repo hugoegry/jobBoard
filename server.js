@@ -22,8 +22,8 @@ const __dirname = path.dirname(__filename);
 // import userRoutes from "./backend/routes/userRoutes.js"; // OLD
 // app.use("/api/users", userRoutes); // OLD
 
-const allowedModules = ['User', 'Offer'];
-const preloadedModules = ['User', 'Offer'];
+const allowedModules = ['user', 'offer', 'company', 'application', 'companyMember'];
+const preloadedModules = ['user', 'offer', 'company', 'application', 'companyMember'];
 const routersCache = {};
 
 //  Préchargement au démarrage \\ 

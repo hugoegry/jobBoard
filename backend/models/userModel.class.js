@@ -1,22 +1,22 @@
-import { BaseModel } from './baseModel.js';
+import { BaseModel } from './baseModel.class.js';
 
 export class UserModel extends BaseModel {
     static table = 'users';
 
-    static async createUser(data) {
-        return await this.insert(this.table, data);
+    static async create(data) {
+        return await this._insert(this.table, data);
     }
 
-    static async updateUser(field, param) {
-        return await this.update(this.table, field, param);
+    static async update(field, param) {
+        return await this._update(this.table, field, param);
     }
 
-    static async deleteUser(conditions) {
-        return await this.delete(this.table, conditions);
+    static async delete(conditions) {
+        return await this._delete(this.table, conditions);
     }
 
-    static async findUser(params, fieleds) {
-        return await this.select(this.table, params, fieleds);
+    static async find(params, fieleds) {
+        return await this._select(this.table, params, fieleds);
     }
 
 
@@ -35,11 +35,7 @@ export class UserModel extends BaseModel {
      * // => { id: 7 } ou null
      */
     static async findAllUsers() {
-        return await this.select(this.table, {}, ['id']);
-    }
-
-    static async findAllUsers(element) {// juste pour test
-        return await this.select(element, {});
+        return await this._select(this.table, {}, ['id']);
     }
 
 
@@ -59,7 +55,7 @@ export class UserModel extends BaseModel {
      * // => { id: 7 } ou null
      */
     static async findById(id) {
-        return await this.select(this.table, {'id': id}, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
+        return await this._select(this.table, {'id': id}, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
     }
 
     /**
@@ -79,36 +75,12 @@ export class UserModel extends BaseModel {
      */
     static async findByEmail(email, passwordincluded = false) {
         const includedFields = passwordincluded ? ['id', 'email', 'password', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'] : ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'];
-        return await this.select(this.table, { 'email': email}, includedFields);
+        return await this._select(this.table, { 'email': email}, includedFields);
     }
-
-    /**
-     * Recherche un utilisateur par email et mot de passe.
-     * 
-     * @async
-     * @function findByEmailAndPassword
-     * @memberof UserModel
-     * @static
-     * @param {string} email - Adresse email de l’utilisateur.
-     * @param {string} password - Mot de passe haché.
-     * @returns {Promise<Object|null>} L’utilisateur correspondant ou `null` si aucun ne correspond.
-     * 
-     * @example
-     * const user = await UserModel.findByEmailAndPassword('user@example.com', 'secret');
-     * console.log(user);
-     * // => { id: 7 } ou null
-     */
-    static async findByEmailAndPassword(email, password) {
-        return await this.select(this.table, { 'email': email, 'password': password }, ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at']);
-    }
-
 
     static async createUserSession(data, table='tmp_session') {
-        return await this.insert(table, data);
+        return await this._insert(table, data);
     }
 
 
 }
-
-
-// model.select('users', { active: true }, 'ORDER BY created_at DESC')

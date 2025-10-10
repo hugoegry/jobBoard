@@ -1,5 +1,5 @@
 import express from 'express';
-import { OfferController as ClassController } from '../controllers/offerController.class.js';
+import { CompanyMemberController as ClassController } from '../controllers/companyMemberController.class.js';
 
 const router = express.Router();
 

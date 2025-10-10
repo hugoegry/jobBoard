@@ -83,4 +83,49 @@ export class BaseController {
             filtredFields: resultFields
         };
     }
+
+
+    ///////////////////////////////////////////
+    /**
+     * Extrait proprement les paramètres pertinents d'une requête Express
+     * selon la méthode HTTP.
+     * 
+     * @param {import('express').Request} req - L'objet requête Express.
+     * @param {import('express').Response} res - L'objet réponse Express.
+     * @returns {Object} - Les paramètres pertinents de la requête.
+     */
+    static extractParams(req, res) {
+        console.log('Requête reçue :', req.method, '\n url :', req.url);
+        const { method, body, query, params } = req;
+        let data = {};
+
+        switch (req.method.toUpperCase()) {
+            case 'GET':
+                data = req.query; // Pour GET : on privilégie la query string
+                break;
+
+            case 'POST':
+            case 'PUT':
+            case 'PATCH':
+                // Pour POST/PUT/PATCH : le body est prioritaire
+                data = (req.body && Object.keys(req.body).length) ? req.body : req.query;
+                break;
+
+            case 'DELETE':
+                data = (req.body && Object.keys(req.body).length) ? req.body : req.query;
+                break;
+
+            default:
+                // Cas fallback pour toute autre méthode
+                data = (req.body && Object.keys(req.body).length) ? req.body : req.query;
+                break;
+        }
+
+        // Fusion intelligente avec les params de route
+        const finalParams = { ...req.params, ...data }; // (ex: /user/:id -> req.params.id)
+        console.log('Params reçus :', finalParams);
+
+        return finalParams;
+    }
+
 }

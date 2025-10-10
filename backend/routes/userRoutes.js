@@ -1,41 +1,32 @@
 import express from 'express';
-import { UserController } from '../controllers/userController.js';
+import { UserController as ClassController } from '../controllers/userController.class.js';
 
 const router = express.Router();
 
-//router.get('/', UserController.listUsers); // GET /users -> liste des utilisateurs
-//router.get('/:id', UserController.getUser); // GET /users/:id -> détails d’un utilisateur // old
+//router.get('/', ClassController.listUsers); // GET /users -> liste des utilisateurs
+//router.get('/:id', ClassController.getUser); // GET /users/:id -> détails d’un utilisateur // old
 
 // user \\
-router.get('/search', (req, res) => UserController.getUser(req, res)); // GET /users/search?email=... -> recherche un utilisateur par email
-//router.get('/user', (req, res) => MyController.getUser0(req, res));
+router.get('/search', (req, res) => ClassController.get(req, res)); // GET /users/search?email=... -> recherche un utilisateur par email
+//router.get('/user', (req, res) => ClassController.getUser0(req, res));
 
-router.post('/search', UserController.getUser); // POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body) // deprecated \\
+router.post('/search', ClassController.get); // POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body) // deprecated \\
 
-router.get('/update', (req, res) => UserController.updateUser(req, res));
-router.put('/', (req, res) => UserController.updateUser(req, res));
+router.get('/update', (req, res) => ClassController.update(req, res));
+router.put('/', (req, res) => ClassController.update(req, res));
 
+router.get('/create', (req, res) => ClassController.create(req, res)); // http://localhost/api/user/create?p:email=hugo.test@gmail.com&password=ttt222&last_name=ln&first_name=fn
+router.post('/', (req, res) => ClassController.create(req, res)); // POST /users -> créer un utilisateur
 
-router.post('/', UserController.createUser); // POST /users -> créer un utilisateur
-
-
-router.put('/:id', UserController.updateUser); // PUT /users/:id -> mettre à jour un utilisateur
-
-router.delete('/:id', UserController.deleteUser); // DELETE /users/:id -> supprimer un utilisateur
+router.get('/delete', (req, res) => ClassController.delete(req, res));
+router.delete('/', (req, res) => ClassController.delete(req, res));
 
 
 // just for test \\
-router.get('/testreou', UserController.getnumber);
-
-router.get('/testreou2', UserController.getjob);
+router.get('/testreou', ClassController.getnumber);
 
 // authentication \\
-router.get('/auth', UserController.auth); // authentification principale \\
+router.get('/auth', (req, res) => ClassController.auth(req, res)); // authentification principale \\
 
-// Obligatoire : export par défaut pour le lazy loader
+// Obligatoire : export par défaut pour le lazy loader \\
 export default router;
-
-
-// http://localhost:4000/users
-
-// nom // poste // type de contrat 
