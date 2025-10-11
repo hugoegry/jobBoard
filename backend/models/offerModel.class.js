@@ -2,6 +2,7 @@ import { BaseModel } from './baseModel.class.js';
 
 export class OfferModel extends BaseModel {
     static table = 'offers';
+    static tableView = 'v_offers_with_company';
 
     static async create(data) {
         return await this._insert(this.table, data);
@@ -16,10 +17,10 @@ export class OfferModel extends BaseModel {
     }
 
     static async find(params, fieleds) {
-        return await this._select(this.table, params, fieleds);
+        return await this._select((this.tableView || this.table), params, fieleds);
     }
 
     static async count(condition = {}, countColumn = '*', extraSql = '') {
-        return await this._count('users', condition, countColumn, extraSql);
+        return await this._count((this.tableView || this.table), condition, countColumn, extraSql);
     }
 }
