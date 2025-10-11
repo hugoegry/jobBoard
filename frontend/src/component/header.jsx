@@ -8,6 +8,12 @@ function Header() {
   const ReturnAccueil = () => {
     navigate("/");
   };
+  const navigateToConnexion = () => {
+    navigate("/connexion");
+  };
+  const navigateToMyAccount = () => {
+    navigate("/MyAccount");
+  };
 
   return (
     <>
@@ -34,10 +40,15 @@ function Header() {
           <div className="BurgerIcon">&#9776;</div>
           <ul className="BurgerMenu">
             <li>
-              <a href="#">Se connecter</a>
+              <a onClick={navigateToConnexion}>Se connecter</a>
             </li>
             <li>
               <a href="#">S’inscrire</a>
+            </li>
+            <li>
+              <a href="#" onClick={navigateToMyAccount}>
+                Mon compte
+              </a>
             </li>
           </ul>
         </div>

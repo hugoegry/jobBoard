@@ -5,6 +5,8 @@ import Header from "./component/header";
 import Footer from "./component/footer";
 import Accueil from "./pages/accueil";
 import JobPages from "./pages/JobPages"; // ✅ ta deuxième page
+import FormConnexion from "./pages/connexion";
+import AccountInfo from "./pages/AccountInfo";
 
 function App() {
   return (
@@ -16,6 +18,10 @@ function App() {
 
         {/* 💼 Page des résultats */}
         <Route path="/jobs" element={<JobPages />} />
+        {/* 🧑‍💻 Page Connexion*/}
+        <Route path="/connexion" element={<FormConnexion />} />
+
+        <Route path="/MyAccount" element={<AccountInfo />} />
       </Routes>
       <Footer />
     </Router>
