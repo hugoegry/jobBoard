@@ -19,4 +19,7 @@ export class OfferModel extends BaseModel {
         return await this._select(this.table, params, fieleds);
     }
 
+    static async count(condition = {}, countColumn = '*', extraSql = '') {
+        return await this._count('users', condition, countColumn, extraSql);
+    }
 }

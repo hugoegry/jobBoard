@@ -1,8 +1,11 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
-import chalk from "chalk";
 import { fileURLToPath } from "url";
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import chalk from "chalk";
+import './backend/globals.js';
 
 // Gestion des variables d'environnement
 import dotenv from "dotenv";
@@ -11,19 +14,16 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 const PORT = process.env.PORT || 80;
 const SECURITE_MODE = process.env.SECURITE_MODE || false;
-
 
 // Gestion des chemins (ESM compatibilité)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// import userRoutes from "./backend/routes/userRoutes.js"; // OLD
-// app.use("/api/users", userRoutes); // OLD
-
-const allowedModules = ['user', 'offer', 'company', 'application', 'companyMember'];
-const preloadedModules = ['user', 'offer', 'company', 'application', 'companyMember'];
+const allowedModules = ['user', 'auth', 'offer', 'company', 'application', 'companyMember'];
+const preloadedModules = ['user', 'auth', 'offer', 'company', 'application', 'companyMember'];
 const routersCache = {};
 
 //  Préchargement au démarrage \\ 
@@ -37,6 +37,19 @@ for (const moduleName of preloadedModules) {
     });
   }
 }
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'secret-def',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    maxAge: 1000 * 60 * 20, // 20 min
+    httpOnly: true,
+    sameSite: 'Strict',
+    secure: false // pour HTTPS
+  }
+}));
 
 
 app.use("/api/:module", async (req, res, next) => {

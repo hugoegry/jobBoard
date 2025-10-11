@@ -85,7 +85,6 @@ export class BaseController {
     }
 
 
-    ///////////////////////////////////////////
     /**
      * Extrait proprement les paramètres pertinents d'une requête Express
      * selon la méthode HTTP.
@@ -128,4 +127,91 @@ export class BaseController {
         return finalParams;
     }
 
+
+    /**
+     * Récupère des enregistrements depuis une classe (modèle) en filtrant les paramètres et champs valides.
+     * @param {Class} Class - La classe ou le modèle sur lequel exécuter la recherche (ex: ORM/DB Model)
+     * @param {Object} params - Les paramètres de filtrage pour la requête
+     * @param {string} table - Nom logique de la table ou collection
+     * @param {string[]} tableColumns - Liste des colonnes/champs valides de la table
+     * @param {string[]} lockedParams - Paramètres qui ne peuvent pas être filtrés/modifiés
+     * @param {string[]} lockedFields - Champs qui ne peuvent pas être sélectionnés
+     * @param {string[]} [paramAndFieldsExeption=[]] - Paramètres et champs à exclure du filtrage
+     * @returns {Promise<{statusCode: number, error: string|null, status: string, value: any[]|null}>} 
+     *          Retourne un objet avec le code HTTP, le statut interne, l'erreur éventuelle et les résultats.
+     */
+    static async _get(Class, params, table,  tableColumns, lockedParams, lockedFields, paramAndFieldsExeption = []) {
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, tableColumns, lockedParams, lockedFields, paramAndFieldsExeption);
+        const value = await Class.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
+        if (!value?.length) {
+            return {statusCode: 404, error: `${table} not found`, status: `ERROR_NOT_FOUND`, value: null};
+        }
+        return {statusCode: 200, error: null, status: `SUCCES`, value: value};
+    }
+
+
+    /**
+     * Crée un nouvel enregistrement dans la classe/modèle.
+     * @param {Class} Class - La classe ou le modèle sur lequel exécuter la création
+     * @param {Object} params - Les paramètres de création
+     * @param {string} table - Nom logique de la table ou collection
+     * @param {string[]} tableColumns - Liste des colonnes/champs valides de la table
+     * @param {string[]} lockedParams - Paramètres qui ne peuvent pas être modifiés
+     * @param {string[]} lockedFields - Champs qui ne peuvent pas être modifiés
+     * @param {string[]} [paramAndFieldsExeption=[]] - Paramètres et champs à exclure du filtrage
+     * @returns {Promise<{statusCode: number, error: string|null, status: string, data: any[]|null}>}
+     *          Retourne un objet avec le code HTTP, le statut interne, l'erreur éventuelle et les données créées.
+     */
+    static async _create(Class, params, table,  tableColumns, lockedParams, lockedFields, paramAndFieldsExeption = []) {
+        const { filtredParams, _ } = await this.filterValidParams(params, tableColumns, lockedParams, lockedFields, { params: 'objet', fields: 'objet' }, paramAndFieldsExeption);
+        const data = await Class.create(filtredParams);
+        if (!data?.length) {
+            return {statusCode: 404, error: `No ${table} records created.`, status: `ERROR_NOT_FOUND`, data: null};
+        }
+        return {statusCode: 201, error: null, status: `SUCCES`, data: data};
+    }
+
+
+    /**
+     * Met à jour des enregistrements existants dans la classe/modèle.
+     * @param {Class} Class - La classe ou le modèle sur lequel exécuter la mise à jour
+     * @param {Object} params - Les paramètres de filtrage et de mise à jour
+     * @param {string} table - Nom logique de la table ou collection
+     * @param {string[]} tableColumns - Liste des colonnes/champs valides de la table
+     * @param {string[]} lockedParams - Paramètres qui ne peuvent pas être modifiés
+     * @param {string[]} lockedFields - Champs qui ne peuvent pas être modifiés
+     * @param {string[]} [paramAndFieldsExeption=[]] - Paramètres et champs à exclure du filtrage
+     * @returns {Promise<{statusCode: number, error: string|null, status: string, data: any[]|null}>}
+     *          Retourne un objet avec le code HTTP, le statut interne, l'erreur éventuelle et les données mises à jour.
+     */
+    static async _update(Class, params, table,  tableColumns, lockedParams, lockedFields, paramAndFieldsExeption = []) {
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, tableColumns, lockedParams, lockedFields, { params: 'objet', fields: 'objet' }, paramAndFieldsExeption);
+        const data = await Class.update(filtredFields, filtredParams);
+        if (!data?.length) {
+            return {statusCode: 404, error: `No ${table} records were updated.`, status: `ERROR_NOT_FOUND`, data: null};
+        }
+        return {statusCode: 201, error: null, status: `SUCCES`, data: data};
+    }
+
+
+    /**
+     * Supprime des enregistrements existants dans la classe/modèle.
+     * @param {Class} Class - La classe ou le modèle sur lequel exécuter la suppression
+     * @param {Object} params - Les paramètres de filtrage pour la suppression
+     * @param {string} table - Nom logique de la table ou collection
+     * @param {string[]} tableColumns - Liste des colonnes/champs valides de la table
+     * @param {string[]} lockedParams - Paramètres qui ne peuvent pas être modifiés
+     * @param {string[]} lockedFields - Champs qui ne peuvent pas être modifiés
+     * @param {string[]} [paramAndFieldsExeption=[]] - Paramètres et champs à exclure du filtrage
+     * @returns {Promise<{statusCode: number, error: string|null, status: string, data: any[]|null}>}
+     *          Retourne un objet avec le code HTTP, le statut interne, l'erreur éventuelle et les données supprimées.
+     */
+    static async _delete(Class, params, table,  tableColumns, lockedParams, lockedFields, paramAndFieldsExeption = []) {
+        const { filtredParams, _ } = await this.filterValidParams(params, tableColumns, lockedParams, lockedFields, { params: 'objet', fields: 'objet' }, paramAndFieldsExeption);
+        const data = await Class.delete(filtredParams);
+        if (!data?.length) {
+            return {statusCode: 404, error: `No ${table} records were deleted.`, status: `ERROR_NOT_FOUND`, data: null};
+        }
+        return {statusCode: 201, error: null, status: `SUCCES`, data: data};
+    }
 }
