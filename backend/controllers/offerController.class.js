@@ -3,8 +3,9 @@ import { OfferModel as ClassModel } from "../models/offerModel.class.js";
 import { BaseController } from "./baseController.class.js";
 
 export class OfferController extends BaseController {
-  static table = "v_offers_with_company";
-  static tableColumns = ClassModel.getColumns(this.table);
+  static table = "offers"; //v_offers_with_company
+  static tableView = "v_offers_with_company";
+  static tableColumns = ClassModel.getColumns(this.tableView || this.table);
   static allowedParams = [];
   static lockedParams = [];
   static lockedFields = [];
@@ -20,10 +21,12 @@ export class OfferController extends BaseController {
       );
       const getValue = await ClassModel.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
       if (!getValue?.length) {
-        return res.status(404).json({
-          error: `${this.table} not found`,
-          status: `ERROR_NOT_FOUND`,
-        });
+        return res
+          .status(404)
+          .json({
+            error: `${this.tableView || this.table} not found`,
+            status: `ERROR_NOT_FOUND`,
+          });
       }
       res.json(getValue);
     } catch (err) {
@@ -98,9 +101,9 @@ export class OfferController extends BaseController {
     }
   }
 
-  static async getnumber(req, res) {
+  static async count(req, res) {
     try {
-      res.json({ number: 42 });
+      res.json(ClassModel.count());
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

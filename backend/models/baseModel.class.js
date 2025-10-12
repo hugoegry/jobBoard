@@ -191,67 +191,62 @@ export class BaseModel {
   }
 
 
-  // SELECT column_name
-// FROM information_schema.columns
-// WHERE table_name = 'users';
-
   /**
-   * Récupère toutes les colonnes de la table.
-   * @async
-   * @param {string} table - Nom de la table
-   * @returns {Promise<Array<string>>} Liste des colonnes
-   */
-    // static async getColumns(table) {
-    //     return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
-    // }
-
-    static async getColumns(table) {
-      const result = await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
-      if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {// On transforme le tableau d'objets en tableau de noms de colonnes
-        return result.map(col => col.column_name);
-      }
-      return [];
-    }
-
-
-
-
-
-
-
-    /**
-   * Met à jour un ou plusieurs enregistrements dans une table.
+   * Compte le nombre d'enregistrements dans une table selon des conditions dynamiques.
    *
    * @async
-   * @param {string} table - Nom de la table
-   * @param {Object} data - Données à mettre à jour
-   * @param {Object} [conditions={}] - Conditions WHERE
-   * @param {string} [returning='id'] - Colonne(s) à retourner
-   * @returns {Promise<Array<Object>>} - Lignes affectées
+   * @param {string} table - Nom de la table à interroger
+   * @param {Object} [conditions={}] - Conditions de filtrage sous forme d'objet { colonne: valeur }
+   * @param {string} [countColumn='*'] - Colonne sur laquelle faire le COUNT (par défaut '*')
+   * @param {string} [extraSql=''] - Clauses SQL additionnelles (ex: GROUP BY, HAVING)
+   * @returns {Promise<number>} - Nombre d'enregistrements correspondant aux conditions
    *
    * @example
-   * await model.update('users', { active: false }, { id: 42 });
+   * // Compter le nombre d'utilisateurs actifs
+   * const total = await model._count('users', { active: true });
    */
-  static async update1(table, data = {}, conditions = {}, returning = 'id') {
-    const keys = Object.keys(data);
-    const setClauses = keys.map((k, i) => `"${k}" = $${i + 1}`).join(', ');
-    const values = Object.values(data);
+  static async _count(table, conditions = {}, countColumn = '*', extraSql = '') {
+    const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);
 
-    let sql = `UPDATE "${table}" SET ${setClauses}`;
+    if (!isSafeColumn(countColumn) && countColumn !== '*') {
+      throw new Error(`Nom de colonne invalide pour COUNT: ${countColumn}`);
+    }
+
+    let sql = `SELECT COUNT(${countColumn === '*' ? '*' : `"${countColumn}"`}) AS total FROM "${table}"`;
+    const values = [];
+
     if (Object.keys(conditions).length) {
-      const offset = values.length;
       const where = Object.entries(conditions)
         .map(([k, v], i) => {
+          if (!isSafeColumn(k)) throw new Error(`Nom de colonne invalide: ${k}`);
           values.push(v);
-          return `"${k}" = $${offset + i + 1}`;
+          return `"${k}" = $${i + 1}`;
         })
         .join(' AND ');
       sql += ` WHERE ${where}`;
     }
 
-    sql += ` RETURNING ${returning}`;
-    const result = await BaseModel.query(sql, values);
-    return result;
+    if (extraSql) sql += ` ${extraSql}`;
+
+    const result = await this.query(sql, values);
+    return result[0]?.total || 0;
   }
 
+
+  /**
+  * Récupère toutes les colonnes de la table.
+  * @async
+  * @param {string} table - Nom de la table
+  * @returns {Promise<Array<string>>} Liste des colonnes
+  */
+  // static async getColumns(table) {
+  //     return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+  // }
+  static async getColumns(table) {
+    const result = await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
+    if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {// On transforme le tableau d'objets en tableau de noms de colonnes
+      return result.map(col => col.column_name);
+    }
+    return [];
+  }
 }

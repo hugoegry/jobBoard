@@ -74,7 +74,7 @@ export class UserModel extends BaseModel {
      * // => { id: 7 } ou null
      */
     static async findByEmail(email, passwordincluded = false) {
-        const includedFields = passwordincluded ? ['id', 'email', 'password', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'] : ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_at', 'updated_at', 'login_metadata'];
+        const includedFields = passwordincluded ? ['id', 'email', 'password', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_when', 'updated_when', 'login_metadata'] : ['id', 'email', 'last_name', 'first_name', 'phone', 'profile', 'role', 'created_when', 'updated_when', 'login_metadata'];
         return await this._select(this.table, { 'email': email}, includedFields);
     }
 
@@ -83,4 +83,11 @@ export class UserModel extends BaseModel {
     }
 
 
+    static async getSession(typeSession, idSession) {
+        return await this.query(`SELECT * FROM get_user_${typeSession}($1);`, [idSession]);
+    }
+
+    static async count(condition = {}, countColumn = '*', extraSql = '') {
+        return await this._count('users', condition, countColumn, extraSql);
+    }
 }
