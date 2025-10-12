@@ -7,6 +7,7 @@ function JobPages() {
   const [jobs, setJobs] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
   const { poste, lieu, contract } = location.state || {};
+
   useEffect(() => {
     const baseURL = "http://localhost/api/offer/search";
     const params = [];
@@ -63,8 +64,8 @@ function JobPages() {
               />
 
               <div className="Ws-DivTextJob">
-                <h2>{job.title}</h2>
-                <span>{job.company_name.toUpperCase()}</span>
+                <h2>{job.title.toUpperCase()}</h2>
+                <span>{job.company_name}</span>
                 <h4>
                   {job.location} ({job.type})
                 </h4>
@@ -76,7 +77,7 @@ function JobPages() {
             <div className="divAfterClick">
               <p className="ACTags">{job.tags}</p>
               <h1 className="AfterClickTitle">Description</h1>
-              <p>{job.offer_description}</p>
+              <p>{job.description}</p>
             </div>
           </div>
         ))
