@@ -22,11 +22,11 @@ export class BaseModel {
   static init() {
     if (!BaseModel.pool) {
       BaseModel.pool = new Pool({
-        host: process.env.DB_HOST || '92.88.3.200',
-        user: process.env.DB_USER || 'hugo.egry@epitech.eu',
-        password: process.env.DB_PASS || 'Azertyuiop123',
-        database: process.env.DB_NAME || 'jobboard',
-        port: process.env.DB_PORT || 5432,
+        host: '92.88.3.200', // process.env.DB_HOST
+        user: 'postgres', // process.env.DB_USER
+        password: 'rootpassword', // process.env.DB_PASS
+        database: 'jobboard', // process.env.DB_NAME
+        port: 5432, // process.env.DB_PORT
         max: 10,
         idleTimeoutMillis: 30000,
       });

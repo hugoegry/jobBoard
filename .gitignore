@@ -1,11 +1,11 @@
 node_modules/
 frontend/node_modules/
 frontend/build/
-.env
-.vscode
-package-lock.json
-package.json
 frontend/package.json
 frontend/pnpm-lock.yaml
+package-lock.json
+package.json
 pnpm-lock.yaml
-
+start.bat
+.env
+.vscode

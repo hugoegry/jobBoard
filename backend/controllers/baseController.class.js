@@ -194,7 +194,7 @@ export class BaseController {
     }
 
 
-    /**
+    /** 
      * Supprime des enregistrements existants dans la classe/modèle.
      * @param {Class} Class - La classe ou le modèle sur lequel exécuter la suppression
      * @param {Object} params - Les paramètres de filtrage pour la suppression

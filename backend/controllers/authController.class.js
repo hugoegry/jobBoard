@@ -32,6 +32,7 @@ export class AuthController extends BaseController {
    * /api/auth/auth?email=admin@example.com&password=63a2492944bfae7323bcb84ff3ff6d9b78edcbb8077c84d39bc37033b6dbffbd&remenber_me=false
    */
   static async authentification(email, password, remember_me, fingerprint = '') {// req.cookies.session_token
+    console.log('parammmmmm', email, password);
     remember_me = (remember_me === 'true' || remember_me === true); // force le bool
     const users = await ClassModel.findByEmail(email, true);
     if (!users?.length) {

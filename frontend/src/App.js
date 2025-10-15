@@ -7,6 +7,8 @@ import Accueil from "./pages/accueil";
 import JobPages from "./pages/JobPages"; // ✅ ta deuxième page
 import FormConnexion from "./pages/connexion";
 import AccountInfo from "./pages/AccountInfo";
+import FrmAdmin from "./pages/admin";
+import FrmApply from "./pages/apply";
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
         <Route path="/connexion" element={<FormConnexion />} />
 
         <Route path="/MyAccount" element={<AccountInfo />} />
+
+        <Route path="/admin" element={<FrmAdmin />} />
+        <Route path="/offre/:offerId" element={<FrmApply />} />
       </Routes>
       <Footer />
     </Router>

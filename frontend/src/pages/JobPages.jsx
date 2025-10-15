@@ -41,6 +41,11 @@ function JobPages() {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
+  const handlePostuler = (e, job) => {
+    e.stopPropagation(); // évite d'ouvrir/fermer le panel en même temps \\
+    navigate(`/offre/${encodeURIComponent(job.offers_id)}`, { state: { job } });
+  };
+
   return (
     <section className="SectionJob">
       <h1>Liste des jobs</h1>
@@ -78,6 +83,11 @@ function JobPages() {
               <p className="ACTags">{job.tags}</p>
               <h1 className="AfterClickTitle">Description</h1>
               <p>{job.company_description}</p>
+              {/* test hugo  */}
+              <div className="ActionsJob">
+                <button type="button" className="PostulerBtn" onClick={(e) => handlePostuler(e, job)}>Postuler</button>
+              </div>
+              {/* test hugo */}
             </div>
           </div>
         ))

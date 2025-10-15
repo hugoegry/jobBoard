@@ -9,50 +9,30 @@ export class DocumentController extends BaseController {
   static lockedParams = [];
   static lockedFields = [];
 
-  static async get(req, res) {
-    try {
-      const params = this.extractParams(req, res);
-      const { filtredParams, filtredFields } = await this.filterValidParams(
-        params,
-        this.tableColumns,
-        this.lockedParams,
-        this.lockedFields
-      );
-      const getValue = await ClassModel.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
-      if (!getValue?.length) {
-        return res.status(404).json({
-          error: `${this.table} not found`,
-          status: `ERROR_NOT_FOUND`,
-        });
+    static async get(req, res) {
+      try {
+        const params = this.extractParams(req, res);
+        const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields);
+        const getValue = await ClassModel.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
+        if (!getValue?.length) {
+          return res.status(404).json({ error: `${this.table} not found`, status: `ERROR_NOT_FOUND` });
+        }
+        res.json(getValue);
+      } catch (err) { 
+        res.status(500).json({ error: err.message });
       }
-      res.json(getValue);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
     }
-  }
 
   static async update(req, res) {
     try {
       const params = this.extractParams(req, res);
-      const { filtredParams, filtredFields } = await this.filterValidParams(
-        params,
-        this.tableColumns,
-        this.lockedParams,
-        this.lockedFields,
-        { params: "objet", fields: "objet" }
-      );
-      const returnedData = await ClassModel.update(
-        filtredFields,
-        filtredParams
-      );
+      const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
+      const returnedData = await ClassModel.update(filtredFields, filtredParams);
       if (!returnedData?.length) {
-        return res.status(404).json({
-          error: `No ${this.table} records were updated.`,
-          status: `ERROR_NOT_FOUND`,
-        });
+        return res.status(404).json({ error: `No ${this.table} records were updated.`, status: `ERROR_NOT_FOUND` });
       }
       res.status(201).json(returnedData);
-    } catch (err) {
+    } catch (err) { 
       res.status(500).json({ error: err.message });
     }
   }
@@ -60,14 +40,7 @@ export class DocumentController extends BaseController {
   static async create(req, res) {
     try {
       const params = this.extractParams(req, res);
-      const { filtredParams, _ } = await this.filterValidParams(
-        params,
-        this.tableColumns,
-        this.lockedParams,
-        this.lockedFields,
-        { params: "objet", fields: "objet" },
-        ["password"]
-      );
+      const { filtredParams, _ } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' }, ['password']);
       const returnedData = await ClassModel.create(filtredParams);
       res.status(201).json(returnedData);
     } catch (err) {
@@ -107,19 +80,10 @@ export class DocumentController extends BaseController {
   static async delete(req, res) {
     try {
       const params = this.extractParams(req, res);
-      const { filtredParams, _ } = await this.filterValidParams(
-        params,
-        this.tableColumns,
-        this.lockedParams,
-        this.lockedFields,
-        { params: "objet", fields: "objet" }
-      );
+      const { filtredParams, _ } = await this.filterValidParams(params, this.tableColumns, this.lockedParams, this.lockedFields, { params: 'objet', fields: 'objet' });
       const returnedData = await ClassModel.delete(filtredParams);
       if (!returnedData?.length) {
-        return res.status(404).json({
-          error: `No ${this.table} records were deleted.`,
-          status: `ERROR_NOT_FOUND`,
-        });
+        return res.status(404).json({ error: `No ${this.table} records were deleted.`, status: `ERROR_NOT_FOUND`});
       }
       res.status(201).end(); // old 204
     } catch (err) {

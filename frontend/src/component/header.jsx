@@ -7,17 +7,12 @@ export default function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const ReturnAccueil = () => {
-    navigate("/");
-  };
+  const ReturnAccueil = () => navigate("/");
 
-  const navigateToConnexion = () => {
-    navigate("/connexion");
-  };
+  const navigateToConnexion = () => navigate("/connexion");
 
-  const navigateToMyAccount = () => {
-    navigate("/MyAccount");
-  };
+  const navigateToMyAccount = () => navigate("/MyAccount");
+  const navigateToAdmin = () => navigate("/admin");
 
   const handleLogout = () => {
     sessionStorage.removeItem("isConnected");
@@ -74,22 +69,13 @@ export default function Header() {
           <ul className="BurgerMenu">
             {!isLoggedIn ? (
               <>
-                <li>
-                  <a onClick={navigateToConnexion}>Se connecter</a>
-                </li>
+                <li><a onClick={navigateToConnexion}>Se connecter</a></li>
               </>
             ) : (
               <>
-                <li>
-                  <a href="#" onClick={navigateToMyAccount}>
-                    Mon compte
-                  </a>
-                </li>
-                <li>
-                  <a href="#" onClick={handleLogout}>
-                    Se déconnecter
-                  </a>
-                </li>
+                <li><a href="#" onClick={navigateToMyAccount}>Mon compte</a></li>
+                <li><a href="#" onClick={handleLogout}>Se déconnecter</a></li>
+                <li><a onClick={navigateToAdmin}>Admin</a></li>
               </>
             )}
           </ul>

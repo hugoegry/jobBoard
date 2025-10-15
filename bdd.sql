@@ -54,10 +54,17 @@ CREATE TABLE const_session (
 );
 
 CREATE TABLE document (
+  id text PRIMARY KEY,
   id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  PRIMARY KEY (id_user, name)
+  name TEXT NOT NULL
 );
+
+CREATE TABLE selected_document (
+  id_document text NOT NULL REFERENCES document(id) ON DELETE CASCADE,
+  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (id_document, id_user)
+);
+
 
 
 CREATE INDEX idx_users_email ON users(email);
@@ -180,7 +187,7 @@ EXECUTE FUNCTION reset_user_login_metadata_after_session();
 
 CREATE OR REPLACE VIEW v_offers_with_company AS
 SELECT
-    o.id AS offer_id,
+    o.id AS offers_id,
     o.company_id,
     c.name AS company_name,
     c.description AS company_description,
@@ -189,7 +196,7 @@ SELECT
 	c.logo AS company_logo,
     o.created_when,
     o.title,
-    o.description AS offer_description,
+    o.description AS offers_description,
     o.location,
     o.tags,
     o.type,
@@ -197,7 +204,7 @@ SELECT
     o.external_url,
     o.collect_application,
     o.recruiter_email,
-    o.created_when AS offer_created_when,
-    o.updated_when AS offer_updated_when
+    o.created_when AS offers_created_when,
+    o.updated_when AS offers_updated_when
 FROM offers o
 JOIN company c ON c.id = o.company_id;

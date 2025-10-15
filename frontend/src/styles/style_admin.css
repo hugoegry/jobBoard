@@ -1,0 +1,518 @@
+:root {
+  --primary: #1a73e8;
+  --primary-light: #e8f0fe;
+  --bg: #f8fafc;
+  --text: #1e293b;
+  --border: #e2e8f0;
+  --danger: #e11d48;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  display: flex;
+  height: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.module-item {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.module-item:hover {
+  background: var(--primary-light);
+}
+
+.module-item.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow: auto;
+}
+
+.btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #1558b0;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn.danger {
+  background: var(--danger);
+}
+
+.search {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 300px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+}
+
+.table th {
+  background: var(--primary-light);
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.input, textarea {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 100%;
+}
+
+
+
+
+
+/*--------------------------------------------------------*/
+
+
+/* Conteneur principal du module admin */
+.module-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Ligne du module : flex pour infos + actions */
+.module-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  font-size: 14px;
+}
+
+/* Lignes alternées blanc / bleu clair */
+.module-row.even {
+  background-color: #ffffff;
+}
+
+.module-row.odd {
+  background-color: var(--primary-light);
+}
+
+/* Conteneur des infos */
+.item-content {
+  display: flex;
+  gap: 10px;
+  flex: 1; /* prend tout l'espace sauf les actions */
+  overflow-x: auto; /* scroll horizontal si le contenu dépasse */
+  padding: 4px 0;
+}
+
+/* Chaque champ */
+.item-field {
+  min-width: 350px;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow-x: auto; /* scroll si trop long */
+  text-overflow: ellipsis;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Actions : modifier / supprimer */
+.item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0; /* ne rétrécit pas */
+  margin-left: 2px;
+  margin-right: 2px;
+  border-left: 1.5px solid #1A73E8;
+  height: 120%; /* la ligne prenne la totaliter de la case  */
+  align-items: center;
+  justify-content: center;
+}
+
+.item-actions .btn-edit,
+.item-actions .btn-delete {
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  max-height: 30px;
+  margin-left: 10px;
+}
+
+.btn-edit {
+  background-color: var(--primary);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.btn-edit:hover {
+  background-color: #1558b0;
+}
+
+.btn-delete {
+  background-color: var(--danger);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #b0143b;
+}
+
+
+
+
+
+
+/*----*/
+
+
+
+
+.header-module {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 60px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.header-module .createButton {
+  position: relative;
+  display: flex;
+  font-size: 16px;
+  padding: 10px 25px;
+  border-radius: 15px;
+  border: none;
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+}
+
+.searchText {
+  position: relative;
+  display: flex;
+  width: 400px;
+  height: 80%;
+}
+
+.searchText input {
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: solid 2px #1a73e8;
+  border-radius: 10px;
+  font-size: 16px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 1px solid #a1a1aa;
+  z-index: 2;
+  transition: all 0.4s ease-in-out;
+}
+
+.searchText span {
+  position: absolute;
+  display: flex;
+  transition: all 0.4s ease-in-out;
+  padding-left: 0.5px;
+  padding-right: 0.5px;
+}
+
+/* .searchText input:hover {
+  box-shadow: 0 5px 15px #007bff;
+} */
+
+
+.searchText input:valid + span {
+  top: -7px;
+  left: 11px;
+  z-index: 3;
+  font-size: 0.725rem;
+  transform: unset;
+  padding-left: 2px;
+  padding-right: 2px;
+  background: var(--bg);
+}
+
+.searchText input:placeholder-shown + span {
+  top: 50%;
+  left: 50%;
+  font-size: 0.9rem;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.searchText input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  border: 2px #007bff solid;
+  /* box-shadow: 0 5px 15px #007bff; */
+  color: #007bff;
+}
+
+.searchText input:focus + span {
+  top: -7px;
+  left: 11px;
+  z-index: 3;
+  font-size: 0.725rem;
+  transform: unset;
+}
+
+.searchText input:invalid {
+  border: 2px red solid;
+  color: red;
+  /* box-shadow: 0 5px 15px red; */
+}
+
+.searchText input:invalid + span {
+  color: red;
+}
+
+
+
+
+
+
+
+
+
+
+
+.edit-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  width: 300px;
+}
+
+.edit-popup textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.edit-popup .button-popup {
+  gap: 10px;
+} 
+
+
+
+
+
+
+
+
+/* === Overlay du popup (fond assombri) === */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* === Conteneur principal du popup === */
+.create-popup {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  width: 75vw;              /* largeur en % de l’écran */
+  max-width: 900px;         /* limite sur grands écrans */
+  max-height: 85vh;         /* ne dépasse pas la hauteur de l’écran */
+  overflow-y: auto;         /* scroll si trop de champs */
+  box-sizing: border-box;
+  animation: popupAppear 0.2s ease-out;
+}
+
+/* Animation d’apparition fluide */
+@keyframes popupAppear {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* === Layout fluide des champs === */
+.popup-fields {
+  display: flex;
+  flex-wrap: wrap;                 /* retour à la ligne automatique */
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px 20px;
+  width: 100%;
+  max-width: 75%;                  /* limite la largeur des champs */
+  margin: 0 auto 20px auto;        /* centrage horizontal */
+}
+
+/* === Chaque champ === */
+.popup-field {
+  flex: 1 1 220px;                 /* largeur de base */
+  min-width: 180px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.popup-field label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 13px;
+}
+
+.popup-field input,
+.popup-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  background: #fafafa;
+}
+
+.popup-field input:focus,
+.popup-field select:focus {
+  border-color: #007bff;
+  outline: none;
+  background: #fff;
+}
+
+/* === Boutons d’action === */
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.popup-actions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.popup-actions button:first-child {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.popup-actions button:last-child {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.popup-actions button:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
+/* === Responsive : sur petits écrans, champs en colonne === */
+@media (max-width: 900px) {
+  .create-popup {
+    width: 90vw;
+    padding: 16px;
+  }
+  .popup-fields {
+    max-width: 100%;
+  }
+  .popup-field {
+    flex: 1 1 100%;
+  }
+}
