@@ -1,7 +1,7 @@
 import express from 'express';
 import { UserController as ClassController } from '../controllers/userController.class.js';
 
-const router = express.Router();
+const router = express.Router(); 
 
 //router.get('/', ClassController.listUsers); // GET /users -> liste des utilisateurs
 //router.get('/:id', ClassController.getUser); // GET /users/:id -> détails d’un utilisateur // old

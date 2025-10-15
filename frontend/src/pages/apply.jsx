@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { fetchList, createEntity } from "../api";
+import { useNavigate } from "react-router-dom";
 import "../styles/style_apply.css";
 
 export default function PostulerPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   // const offerId = new URLSearchParams(location.search).get("offerId");
   const { offerId } = useParams();
 
@@ -101,9 +103,9 @@ export default function PostulerPage() {
 
       <form className="ApplyForm" onSubmit={handleSubmit}>
         <h2>Vos informations</h2>
-        <label>Prénom <input type="text" name="first_name" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })} required/></label>
-        <label>Nom <input type="text" name="last_name" value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })} required/></label>
+        <label>Email <input type="text" name="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required/></label>
         <label>Téléphone <input type="tel" name="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required/></label>
+        <label>Message <textarea name="message" placeholder="Votre message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required /> </label>
 
         <h2>Documents joints</h2>
         <div className="DocSelectContainer">
@@ -125,6 +127,7 @@ export default function PostulerPage() {
             return (<span key={id} className="DocTag">{doc.name}<button type="button" className="RemoveDocBtn" onClick={() => toggleDocument(id)}>×</button></span>);
           })}
         </div>
+
 
         {/* frm crea new doc */}
         {form.showCreate && (

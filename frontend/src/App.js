@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./component/header";
 import Footer from "./component/footer";
 import Accueil from "./pages/accueil";
-import JobPages from "./pages/JobPages"; // ✅ ta deuxième page
+import JobPages from "./pages/JobPages";
 import FormConnexion from "./pages/connexion";
 import AccountInfo from "./pages/AccountInfo";
 import FrmAdmin from "./pages/admin";

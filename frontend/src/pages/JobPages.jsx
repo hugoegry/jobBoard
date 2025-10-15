@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import photoEntrepriseDefault from "../asset/pointDinterrogation.png";
 
 function JobPages() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [jobs, setJobs] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
