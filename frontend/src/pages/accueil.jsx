@@ -12,7 +12,7 @@ function Accueil() {
 
   // Récupération du nombre d'annonces au montage
   useEffect(() => {
-    fetch("http://localhost/api/user/testreou")
+    fetch("http://localhost/api/offer/count")
       .then((res) => res.json())
       .then((data) => {
         setNbAnnonce(data.number);

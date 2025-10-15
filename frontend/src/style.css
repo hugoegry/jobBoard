@@ -964,17 +964,23 @@ select option:first-child {
 /*----- client part -----*/
 /* === Container principal === */
 .SectionAccountContainer {
-  width: 900px;
+  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+.SectionAccountContainer {
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  align-items: center; /* centre verticalement */
+  min-height: 100vh; /* prend toute la hauteur de la fenêtre */
 }
 .account-container {
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  width: 70%;
+  width: 50%;
   padding: 30px;
   background: #ffffff;
   border-radius: 16px;

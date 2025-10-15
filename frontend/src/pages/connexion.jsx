@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function FormConnexion() {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isConnected, setIsConnected] = useState(
     sessionStorage.getItem("isConnected") === "true"
@@ -19,35 +21,113 @@ function FormConnexion() {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   };
 
+  // ======= CONNEXION =======
   const handleLogin = async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("mdp").value;
+    const email = document.getElementById("email-login").value;
+    const password = document.getElementById("mdp-login").value;
+    const rememberMe = document.getElementById("rememberMe-login").checked;
 
     if (!email || !password) {
       alert("Veuillez remplir tous les champs !");
+      return;
+    }
+    let hashedPassword = await hashPassword(password);
+    try {
+      // Construction de la query string
+      const query = new URLSearchParams({
+        email: email,
+        password: hashedPassword, // mot de passe en clair
+        remember_me: rememberMe,
+      }).toString();
+
+      const response = await fetch(`http://localhost/api/auth?${query}`, {
+        method: "GET",
+      });
+
+      const data = await response.json();
+      console.log("Réponse backend :", data);
+
+      if (data.success || data.id) {
+        // selon ce que renvoie ton backend
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("isConnected", "true");
+        sessionStorage.setItem("userFirstName", data.first_name);
+        sessionStorage.setItem("userLastName", data.last_name);
+        sessionStorage.setItem("UserId", data.id);
+        sessionStorage.setItem("userPhone", data.phone);
+        window.dispatchEvent(new Event("storage"));
+        setIsConnected(true);
+        navigate("/");
+      } else {
+        alert(data.error || "Identifiants invalides !");
+      }
+    } catch (err) {
+      console.error("Erreur fetch :", err);
+      alert("Erreur lors de la connexion.");
+    }
+  };
+
+  // ======= INSCRIPTION =======
+  const handleSignup = async () => {
+    const lastName = document.getElementById("lastname-signup").value.trim();
+    const firstName = document.getElementById("firstname-signup").value.trim();
+    const email = document.getElementById("email-signup").value.trim();
+    const phone = document.getElementById("phoneNumber-signup").value.trim();
+    const password = document.getElementById("password-signup").value;
+    const confPassword = document.getElementById("confpassword-signup").value;
+
+    if (!lastName || !firstName || !email || !password || !confPassword) {
+      alert("Veuillez remplir tous les champs !");
+      return;
+    }
+
+    if (password !== confPassword) {
+      alert("Les mots de passe ne correspondent pas !");
       return;
     }
 
     const hashedPassword = await hashPassword(password);
 
     try {
-      const response = await fetch(
-        `http://localhost/api/user/auth?email=${email}&password=${hashedPassword}&remenber_me=false`
-      );
+      const response = await fetch("http://localhost/api/auth/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "p:email": email,
+          "p:password": hashedPassword,
+          "p:last_name": lastName,
+          "p:first_name": firstName,
+          "p:phone": phone,
+        }),
+      });
+
       const data = await response.json();
 
-      if (data.success) {
-        // Stocker la session
+      if (response.ok) {
+        document.getElementById("lastname-signup").value = "";
+        document.getElementById("firstname-signup").value = "";
+        document.getElementById("email-signup").value = "";
+        document.getElementById("phoneNumber-signup").value = "";
+        document.getElementById("password-signup").value = "";
+        document.getElementById("confpassword-signup").value = "";
+        setIsSignUp(false);
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
+        sessionStorage.setItem("userFirstName", data.first_name);
+        sessionStorage.setItem("userLastName", data.last_name);
+        sessionStorage.setItem("UserId", data.id);
+        sessionStorage.setItem("userPhone", phone);
+        window.dispatchEvent(new Event("storage"));
         setIsConnected(true);
-        alert("Connexion réussie !");
+        navigate("/");
+      } else if (response.status === 409) {
+        alert("Un compte avec cet email existe déjà !");
       } else {
-        alert("Identifiants invalides !");
+        alert(data.error || "Erreur lors de l'inscription.");
       }
     } catch (err) {
       console.error("Erreur :", err);
-      alert("Erreur lors de la connexion.");
+      alert("Erreur serveur lors de l'inscription.");
     }
   };
 
@@ -63,24 +143,55 @@ function FormConnexion() {
             <div id="containerLogin" className="containerContentForm active">
               <h1>Créer un compte</h1>
               <span>ou utilisez votre email pour l'inscription</span>
-              <input type="text" name="lastname" placeholder="Nom" />
-              <input type="text" name="firstname" placeholder="Prenom" />
-              <input type="email" name="email" placeholder="Email" />
+              <input
+                type="text"
+                id="lastname-signup"
+                name="lastname"
+                placeholder="Nom"
+              />
+              <input
+                type="text"
+                id="firstname-signup"
+                name="firstname"
+                placeholder="Prénom"
+              />
+              <input
+                type="email"
+                id="email-signup"
+                name="email"
+                placeholder="Email"
+              />
+              <input
+                type="text"
+                id="phoneNumber-signup"
+                name="phoneNumber"
+                placeholder="Numéro de téléphone"
+              />
               <input
                 type="password"
+                id="password-signup"
                 name="password"
                 placeholder="Mot de passe"
               />
               <input
                 type="password"
+                id="confpassword-signup"
                 name="confpassword"
-                placeholder="Confirme le Mot de passe"
+                placeholder="Confirmez le mot de passe"
               />
               <div className="containerRememberMe">
-                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <input
+                  type="checkbox"
+                  id="rememberMe-signup"
+                  name="rememberMe"
+                />
                 <span>Se souvenir de moi</span>
               </div>
-              <button type="button" className="buttonStartAuth">
+              <button
+                type="button"
+                className="buttonStartAuth"
+                onClick={handleSignup}
+              >
                 Inscription
               </button>
             </div>
@@ -95,15 +206,24 @@ function FormConnexion() {
               <span id="SKH-conexion-texte-left-web">
                 ou utilisez votre mot de passe et votre email
               </span>
-              <input id="email" type="email" name="email" placeholder="Email" />
+              <input
+                id="email-login"
+                type="email"
+                name="email"
+                placeholder="Email"
+              />
               <input
                 type="password"
                 name="password"
                 placeholder="Mot de passe"
-                id="mdp"
+                id="mdp-login"
               />
               <div className="containerRememberMe">
-                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <input
+                  type="checkbox"
+                  id="rememberMe-login"
+                  name="rememberMe"
+                />
                 <span>Se souvenir de moi</span>
               </div>
               <a href="#" className="SKH-MDP-OUBLI">

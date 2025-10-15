@@ -1,51 +1,121 @@
 import React, { useState, useEffect } from "react";
 
 function AccountPage() {
-  // Charger les infos utilisateur depuis le sessionStorage
-  const [user, setUser] = useState(() => {
-    const savedUser = sessionStorage.getItem("user");
-    return savedUser
-      ? JSON.parse(savedUser)
-      : { email: "", first_name: "", last_name: "", phone: "", file: null };
+  const [isEditing, setIsEditing] = useState(false);
+  const [filePreview, setFilePreview] = useState(null);
+  const [user, setUser] = useState({
+    id: sessionStorage.getItem("UserId") || "",
+    email: sessionStorage.getItem("userEmail") || "",
+    first_name: sessionStorage.getItem("userFirstName") || "",
+    last_name: sessionStorage.getItem("userLastName") || "",
+    phone: sessionStorage.getItem("userPhone") || "",
+    file: sessionStorage.getItem("userFile") || null,
   });
 
-  const [formData, setFormData] = useState(user);
-  const [isEditing, setIsEditing] = useState(false);
-  const [filePreview, setFilePreview] = useState(user.file || null);
-
   useEffect(() => {
-    setFormData(user);
-    setFilePreview(user.file || null);
-  }, [user]);
+    const savedUser = {
+      email: sessionStorage.getItem("userEmail") || "",
+      first_name: sessionStorage.getItem("userFirstName") || "",
+      last_name: sessionStorage.getItem("userLastName") || "",
+      phone: sessionStorage.getItem("userPhone") || "",
+      file: sessionStorage.getItem("userFile") || null,
+    };
+    setUser(savedUser);
+    if (savedUser.file) {
+      setFilePreview(`http://localhost:3000/uploads/${savedUser.file}`);
+    }
+  }, []);
 
-  // Gérer les inputs de texte
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  //  mettre à jour les champs dans le state
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Gérer le choix d'un fichier
+  // Gestion du fichier local (aperçu)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          file: reader.result, // base64 du fichier
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      sessionStorage.setItem("userFile", reader.result);
+      setFilePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ✅ Sauvegarde sur le serveur (update user + ajout document)
+  const handleSave = async () => {
+    try {
+      const fileInput = document.getElementById("UserFile");
+
+      // 1. Préparer FormData pour l'utilisateur
+      const formDataUser = new FormData();
+      formDataUser.append("p:id", sessionStorage.getItem("UserId"));
+      formDataUser.append("f:email", user.email);
+      formDataUser.append("f:first_name", user.first_name);
+      formDataUser.append("f:last_name", user.last_name);
+      formDataUser.append("f:phone", user.phone);
+
+      const responseUser = await fetch("http://localhost/api/user/file", {
+        method: "PUT",
+        body: formDataUser,
+      });
+
+      if (!responseUser.ok)
+        throw new Error(`Erreur HTTP ${responseUser.status} (user)`);
+
+      const dataUser = await responseUser.json();
+      console.log("✅ Réponse user :", dataUser);
+
+      // Mettre à jour les infos en session
+      sessionStorage.setItem("userEmail", dataUser.email);
+      sessionStorage.setItem("userFirstName", dataUser.first_name);
+      sessionStorage.setItem("userLastName", dataUser.last_name);
+      sessionStorage.setItem("userPhone", dataUser.phone);
+
+      // 2. Si un fichier est présent -> upload document
+      if (fileInput && fileInput.files[0]) {
+        const formDataDocument = new FormData();
+        formDataDocument.append("file", fileInput.files[0]); // nom attendu par multer
+        formDataDocument.append("id_user", sessionStorage.getItem("UserId")); // nom attendu par le back
+
+        const responseDoc = await fetch("http://localhost/api/document/", {
+          method: "POST",
+          body: formDataDocument,
         });
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+
+        if (!responseDoc.ok)
+          throw new Error(`Erreur HTTP ${responseDoc.status} (document)`);
+
+        const dataDoc = await responseDoc.json();
+        console.log("📄 Réponse document :", dataDoc);
+
+        if (dataDoc.file) {
+          const fileUrl = `http://localhost:3000/uploads/${dataDoc.file}`;
+          setFilePreview(fileUrl);
+          sessionStorage.setItem("userFile", dataDoc.file);
+        }
+      }
+
+      setIsEditing(false);
+      alert("✅ Mise à jour réussie !");
+    } catch (err) {
+      console.error("Erreur serveur lors de la mise à jour :", err);
+      alert("❌ Erreur serveur lors de la mise à jour.");
     }
   };
 
-  // Sauvegarde des données dans sessionStorage
-  const handleSave = () => {
-    sessionStorage.setItem("user", JSON.stringify(formData));
-    setUser(formData);
+  const handleCancel = () => {
+    setUser({
+      id: sessionStorage.getItem("UserId") || "",
+      email: sessionStorage.getItem("userEmail") || "",
+      first_name: sessionStorage.getItem("userFirstName") || "",
+      last_name: sessionStorage.getItem("userLastName") || "",
+      phone: sessionStorage.getItem("userPhone") || "",
+      file: sessionStorage.getItem("userFile") || null,
+    });
+    setFilePreview(sessionStorage.getItem("userFile") || null);
     setIsEditing(false);
   };
 
@@ -58,52 +128,58 @@ function AccountPage() {
         <input
           type="email"
           name="email"
-          value={sessionStorage.getItem("email")}
-          onChange={handleChange}
+          value={user.email}
+          onChange={handleInputChange}
           disabled={!isEditing}
+          id="UserEmail"
         />
 
         <label>Prénom :</label>
         <input
           type="text"
           name="first_name"
-          value={formData.first_name}
-          onChange={handleChange}
+          value={user.first_name}
+          onChange={handleInputChange}
           disabled={!isEditing}
+          id="UserFirstName"
         />
 
         <label>Nom :</label>
         <input
           type="text"
           name="last_name"
-          value={formData.last_name}
-          onChange={handleChange}
+          value={user.last_name}
+          onChange={handleInputChange}
           disabled={!isEditing}
+          id="UserLastName"
         />
 
         <label>Téléphone :</label>
         <input
           type="text"
           name="phone"
-          value={formData.phone}
-          onChange={handleChange}
+          value={user.phone}
+          onChange={handleInputChange}
           disabled={!isEditing}
+          id="UserPhone"
         />
 
-        {/* === Section Fichier === */}
         <div className="file-section">
           <label>Document associé :</label>
           {filePreview ? (
-            <div className="file-preview">
-              {/* Si c’est une image, on l’affiche. Sinon on affiche juste un lien */}
-              {filePreview.startsWith("data:image") ? (
-                <img src={filePreview} alt="document" />
-              ) : (
-                <a href={filePreview} target="_blank" rel="noreferrer">
-                  Voir le document
-                </a>
-              )}
-            </div>
+            filePreview.startsWith("data:image") ? (
+              <a href={filePreview} target="_blank" rel="noreferrer">
+                Voir l'image
+              </a>
+            ) : (
+              <a
+                href={`http://localhost:3000/uploads/${user.file}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Voir le document
+              </a>
+            )
           ) : (
             <p className="no-file">Aucun document</p>
           )}
@@ -111,8 +187,10 @@ function AccountPage() {
           {isEditing && (
             <input
               type="file"
-              onChange={handleFileChange}
+              id="UserFile"
+              name="file"
               className="file-input"
+              onChange={handleFileChange}
             />
           )}
         </div>
@@ -126,14 +204,7 @@ function AccountPage() {
             <button className="save-button" onClick={handleSave}>
               Enregistrer
             </button>
-            <button
-              className="cancel-button"
-              onClick={() => {
-                setFormData(user);
-                setFilePreview(user.file || null);
-                setIsEditing(false);
-              }}
-            >
+            <button className="cancel-button" onClick={handleCancel}>
               Annuler
             </button>
           </>
