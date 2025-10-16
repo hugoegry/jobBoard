@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname));
   },
 });
+
 const upload = multer({ storage });
 
 router.get("/", (req, res) => ClassController.get(req, res));
@@ -30,6 +31,7 @@ router.get("/create", (req, res) => ClassController.create(req, res)); // http:/
 router.post("/", upload.single("file"), ClassController.createWithFiles);
 
 router.get("/delete", (req, res) => ClassController.delete(req, res));
-router.delete("/", (req, res) => ClassController.delete(req, res));
+// router.delete("/", (req, res) => ClassController.delete(req, res));
+router.delete("/:id", (req, res) => ClassController.deleteDocument(req, res));
 
 export default router;

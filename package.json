@@ -4,13 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "startV1": "node server.js",
-    "dev": "nodemon server.js",
-    "server": "node server.js",
-    "serverdev": "nodemon server.js",
-    "client": "npm start --prefix frontend",
-    "start": "npm-run-all --parallel server client",
-    "devv2": "npm-run-all --parallel serverdev client"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",

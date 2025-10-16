@@ -9,6 +9,7 @@ import FormConnexion from "./pages/connexion";
 import AccountInfo from "./pages/AccountInfo";
 import FrmAdmin from "./pages/admin";
 import FrmApply from "./pages/apply";
+import UserManual from "./pages/UserManual";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
 
         <Route path="/admin" element={<FrmAdmin />} />
         <Route path="/offre/:offerId" element={<FrmApply />} />
+        <Route path="/usermanual" element={<UserManual />} />
       </Routes>
       <Footer />
     </Router>

@@ -1,9 +1,8 @@
 // BaseModel.js
-import pkg from 'pg';
+import pkg from "pg";
 const { Pool } = pkg;
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
-
 
 /**
  * Classe de base pour la gestion des opérations CRUD sur une base PostgreSQL.
@@ -22,10 +21,10 @@ export class BaseModel {
   static init() {
     if (!BaseModel.pool) {
       BaseModel.pool = new Pool({
-        host: '92.88.3.200', // process.env.DB_HOST
-        user: 'postgres', // process.env.DB_USER
-        password: 'rootpassword', // process.env.DB_PASS
-        database: 'jobboard', // process.env.DB_NAME
+        host: "92.88.3.200", // process.env.DB_HOST
+        user: "postgres", // process.env.DB_USER
+        password: "rootpassword", // process.env.DB_PASS
+        database: "jobboard", // process.env.DB_NAME
         port: 5432, // process.env.DB_PORT
         max: 10,
         idleTimeoutMillis: 30000,
@@ -51,7 +50,7 @@ export class BaseModel {
       const result = await BaseModel.pool.query(sql, values);
       return result.rows;
     } catch (err) {
-      console.error('[PostgreSQL QUERY ERROR]', err.message, { sql, values });
+      console.error("[PostgreSQL QUERY ERROR]", err.message, { sql, values });
       throw err;
     }
   }
@@ -70,34 +69,43 @@ export class BaseModel {
    * // Sélectionner tous les utilisateurs actifs avec leurs id et emails
    * await model.select('users', { active: true }, ['id', 'email'], 'ORDER BY created_at DESC');
    */
-  static async _select(table, conditions = {}, columns = ['*'], extraSql = '') {
+  static async _select(table, conditions = {}, columns = ["*"], extraSql = "") {
     // Validation simple pour éviter injection dans le nom de colonnes
-    const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);// methode de regex
+    const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name); // methode de regex
 
     // Construction des colonnes à sélectionner
-    const selectCols = Array.isArray(columns) && columns.length ? columns.map(col => (col === '*' ? '*' : `"${col}"`)).join(', ') : '*';
+    const selectCols =
+      Array.isArray(columns) && columns.length
+        ? columns.map((col) => (col === "*" ? "*" : `"${col}"`)).join(", ")
+        : "*";
 
-    if (selectCols.includes(';')) {
-      throw new Error('Caractère SQL interdit détecté dans la liste de colonnes');
+    if (selectCols.includes(";")) {
+      throw new Error(
+        "Caractère SQL interdit détecté dans la liste de colonnes"
+      );
     }
 
     let sql = `SELECT ${selectCols} FROM "${table}"`;
     const values = [];
 
-    if (Object.keys(conditions).length) { // Construction du WHERE
+    if (Object.keys(conditions).length) {
+      // Construction du WHERE
       const where = Object.entries(conditions)
         .map(([k, v], i) => {
-          if (!isSafeColumn(k)) throw new Error(`Nom de colonne invalide: ${k}`);
+          if (!isSafeColumn(k))
+            throw new Error(`Nom de colonne invalide: ${k}`);
           values.push(v);
           return `"${k}" = $${i + 1}`;
         })
-        .join(' AND ');
+        .join(" AND ");
       sql += ` WHERE ${where}`;
     }
 
     // Clauses additionnelles (ORDER BY, LIMIT, etc.)
     if (extraSql && /;/.test(extraSql)) {
-      throw new Error('Le paramètre extraSql ne doit pas contenir de point-virgule.');
+      throw new Error(
+        "Le paramètre extraSql ne doit pas contenir de point-virgule."
+      );
     }
     sql += ` ${extraSql}`;
 
@@ -116,19 +124,20 @@ export class BaseModel {
    * @example
    * await model.insert('users', { email: 'test@test.com', name: 'John' });
    */
-  static async _insert(table, data = {}, returning = 'id') {
+  static async _insert(table, data = {}, returning = "id") {
     const keys = Object.keys(data);
     const values = Object.values(data);
-    const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-    const sql = `INSERT INTO "${table}" (${keys.map(k => `"${k}"`).join(', ')})
+    const placeholders = keys.map((_, i) => `$${i + 1}`).join(", ");
+    const sql = `INSERT INTO "${table}" (${keys
+      .map((k) => `"${k}"`)
+      .join(", ")})
                  VALUES (${placeholders})
                  RETURNING ${returning}`;
     const result = await BaseModel.query(sql, values);
     return result || null;
   }
 
-
-  static async _update(table, data = {}, conditions = {}, returning = 'id') {
+  static async _update(table, data = {}, conditions = {}, returning = "id") {
     const keys = Object.keys(data);
     const setClauses = [];
     const values = [];
@@ -136,7 +145,7 @@ export class BaseModel {
     for (const [i, key] of keys.entries()) {
       let value = data[key];
 
-      if (typeof value === 'object' && value !== null) {
+      if (typeof value === "object" && value !== null) {
         value = JSON.stringify(value); // Si c'est un objet  on le convertit en JSONB \\
         setClauses.push(`"${key}" = $${i + 1}::jsonb`);
       } else {
@@ -146,7 +155,7 @@ export class BaseModel {
       values.push(value);
     }
 
-    let sql = `UPDATE "${table}" SET ${setClauses.join(', ')}`;
+    let sql = `UPDATE "${table}" SET ${setClauses.join(", ")}`;
 
     if (Object.keys(conditions).length) {
       const offset = values.length;
@@ -154,17 +163,17 @@ export class BaseModel {
         .map(([k, v], i) => {
           values.push(v);
           return `"${k}" = $${offset + i + 1}`;
-        }).join(' AND ');
+        })
+        .join(" AND ");
       sql += ` WHERE ${where}`;
     }
 
     sql += ` RETURNING ${returning}`;
-    console.log('Condfgfdgd', sql);
-    console.log('Values', values);
+    console.log("Condfgfdgd", sql);
+    console.log("Values", values);
     const result = await BaseModel.query(sql, values);
     return result;
   }
-
 
   /**
    * Supprime un ou plusieurs enregistrements d’une table.
@@ -177,19 +186,18 @@ export class BaseModel {
    * @example
    * await model.delete('users', { id: 5 });
    */
-  static async _delete(table, conditions = {}, returning = '*') {
+  static async _delete(table, conditions = {}, returning = "*") {
     const values = [];
     const where = Object.entries(conditions)
       .map(([k, v], i) => {
         values.push(v);
         return `"${k}" = $${i + 1}`;
       })
-      .join(' AND ');
+      .join(" AND ");
     const sql = `DELETE FROM "${table}" WHERE ${where} RETURNING ${returning}`;
     const result = await BaseModel.query(sql, values);
     return result;
   }
-
 
   /**
    * Compte le nombre d'enregistrements dans une table selon des conditions dynamiques.
@@ -205,24 +213,32 @@ export class BaseModel {
    * // Compter le nombre d'utilisateurs actifs
    * const total = await model._count('users', { active: true });
    */
-  static async _count(table, conditions = {}, countColumn = '*', extraSql = '') {
+  static async _count(
+    table,
+    conditions = {},
+    countColumn = "*",
+    extraSql = ""
+  ) {
     const isSafeColumn = (name) => /^[a-zA-Z0-9_]+$/.test(name);
 
-    if (!isSafeColumn(countColumn) && countColumn !== '*') {
+    if (!isSafeColumn(countColumn) && countColumn !== "*") {
       throw new Error(`Nom de colonne invalide pour COUNT: ${countColumn}`);
     }
 
-    let sql = `SELECT COUNT(${countColumn === '*' ? '*' : `"${countColumn}"`}) AS total FROM "${table}"`;
+    let sql = `SELECT COUNT(${
+      countColumn === "*" ? "*" : `"${countColumn}"`
+    }) AS total FROM "${table}"`;
     const values = [];
 
     if (Object.keys(conditions).length) {
       const where = Object.entries(conditions)
         .map(([k, v], i) => {
-          if (!isSafeColumn(k)) throw new Error(`Nom de colonne invalide: ${k}`);
+          if (!isSafeColumn(k))
+            throw new Error(`Nom de colonne invalide: ${k}`);
           values.push(v);
           return `"${k}" = $${i + 1}`;
         })
-        .join(' AND ');
+        .join(" AND ");
       sql += ` WHERE ${where}`;
     }
 
@@ -232,20 +248,27 @@ export class BaseModel {
     return result[0]?.total || 0;
   }
 
-
   /**
-  * Récupère toutes les colonnes de la table.
-  * @async
-  * @param {string} table - Nom de la table
-  * @returns {Promise<Array<string>>} Liste des colonnes
-  */
+   * Récupère toutes les colonnes de la table.
+   * @async
+   * @param {string} table - Nom de la table
+   * @returns {Promise<Array<string>>} Liste des colonnes
+   */
   // static async getColumns(table) {
   //     return await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
   // }
   static async getColumns(table) {
-    const result = await this.query(`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, [table]);
-    if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object') {// On transforme le tableau d'objets en tableau de noms de colonnes
-      return result.map(col => col.column_name);
+    const result = await this.query(
+      `SELECT column_name FROM information_schema.columns WHERE table_name = $1`,
+      [table]
+    );
+    if (
+      Array.isArray(result) &&
+      result.length > 0 &&
+      typeof result[0] === "object"
+    ) {
+      // On transforme le tableau d'objets en tableau de noms de colonnes
+      return result.map((col) => col.column_name);
     }
     return [];
   }

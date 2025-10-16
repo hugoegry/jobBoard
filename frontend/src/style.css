@@ -398,7 +398,7 @@ select option {
   box-shadow: 0 0 6px #3b82f6;
   outline: none;
 }
-select option:first-child {
+.Ws-Select-Contract option:first-child {
   display: none;
 }
 /* Animation */
@@ -1202,15 +1202,6 @@ select option:first-child {
   }
 }
 
-
-
-
-
-
-
-
-
-
 /* test hugo button postuller */
 
 /* Actions container */
@@ -1218,7 +1209,7 @@ select option:first-child {
   display: flex;
   gap: 8px;
   justify-content: flex-end; /* place le bouton à droite */
-  padding: 10px 0 0;         /* petit espacement au dessus */
+  padding: 10px 0 0; /* petit espacement au dessus */
 }
 
 /* Bouton principal "Postuler" */
@@ -1237,14 +1228,14 @@ select option:first-child {
   font-size: 14px;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-  box-shadow: 0 6px 16px rgba(17,119,238,0.12);
+  box-shadow: 0 6px 16px rgba(17, 119, 238, 0.12);
   line-height: 1;
 }
 
 /* Hover / active */
 .PostulerBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(17,119,238,0.14);
+  box-shadow: 0 10px 22px rgba(17, 119, 238, 0.14);
 }
 .PostulerBtn:active {
   transform: translateY(0);
@@ -1252,9 +1243,9 @@ select option:first-child {
 
 /* Focus (accessibilité clavier) */
 .PostulerBtn:focus {
-  outline: 3px solid rgba(17,119,238,0.22);
+  outline: 3px solid rgba(17, 119, 238, 0.22);
   outline-offset: 2px;
-  box-shadow: 0 10px 22px rgba(17,119,238,0.14);
+  box-shadow: 0 10px 22px rgba(17, 119, 238, 0.14);
 }
 
 /* Disabled state */
@@ -1289,5 +1280,7 @@ select option:first-child {
     padding: 8px 10px;
     font-size: 13px;
   }
-  .ActionsJob { justify-content: center; }
+  .ActionsJob {
+    justify-content: center;
+  }
 }
