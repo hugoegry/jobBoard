@@ -48,7 +48,7 @@ function FormConnexion() {
       console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
-        // selon ce que renvoie ton backend
+        sessionStorage.setItem("userobj", JSON.stringify(data));
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
         sessionStorage.setItem("userFirstName", data.first_name);

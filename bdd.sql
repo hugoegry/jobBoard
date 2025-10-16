@@ -61,8 +61,8 @@ CREATE TABLE document (
 
 CREATE TABLE selected_document (
   id_document text NOT NULL REFERENCES document(id) ON DELETE CASCADE,
-  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  PRIMARY KEY (id_document, id_user)
+  id_offers UUID NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
+  PRIMARY KEY (id_document, id_offers)
 );
 
 

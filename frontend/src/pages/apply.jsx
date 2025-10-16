@@ -7,15 +7,22 @@ import "../styles/style_apply.css";
 export default function PostulerPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  // const offerId = new URLSearchParams(location.search).get("offerId");
+  const userId = sessionStorage.getItem("UserId");
+  if (!userId)  { // si pas connecté, redirige vers connexion
+    alert("Veuillez vous connecter pour postuler.");
+    navigate("/connexion");
+  }
+  // const offerId = new URLSearchParams(location.search).get("offerId"); old si parm ?element=element
   const { offerId } = useParams();
 
   const [offer, setOffer] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [form, setForm] = useState({
-    first_name: "",
-    last_name: "",
-    phone: "",
+    offers_id: offerId,
+    users_id: userId,
+    candidate_phone: "",
+    candidate_email: "",
+    message: "",
     documents: [],
   });
   const [newDoc, setNewDoc] = useState({ name: "", file: null });
@@ -33,7 +40,7 @@ export default function PostulerPage() {
 
   // charge les doc add filtre de secu par user document \\
   useEffect(() => {
-    fetchList("document") // add restricion p:user_id={userid recup en session}
+    fetchList(`document?p:id_user=${userId}`)
       .then((data) => setDocuments(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
@@ -43,7 +50,7 @@ export default function PostulerPage() {
     if (!newDoc.name || !newDoc.file) return alert("Nom et fichier requis");
     setLoading(true);
     try {
-      const res = await createEntity("document", {}, { name: newDoc.name });
+      const res = await createEntity("document", { name: newDoc.name });
       setDocuments((prev) => [...prev, res]);
       setForm((f) => ({
         ...f,
@@ -63,21 +70,29 @@ export default function PostulerPage() {
       const already = prev.documents.includes(docId);
       return {
         ...prev,
-        documents: already
-          ? prev.documents.filter((id) => id !== docId)
-          : [...prev.documents, docId],
+        documents: already ? prev.documents.filter((id) => id !== docId) : [...prev.documents, docId],
       };
     });
   };
 
-  // envoi quandidature
+  // envoi candidature
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const params = { offer_id: offerId };
-      const fields = { ...form };
-      await createEntity("application", params, fields);
+      const paramsRqtePrincipal = { ...form };
+      const paramsRqteSelectedDocument = { ...form.documents };
+      console.log("Envoi candidature avec params =", paramsRqtePrincipal, "et fields =", paramsRqteSelectedDocument);
+      await createEntity("applications", paramsRqtePrincipal);
+
+      await Promise.all(
+        paramsRqteSelectedDocuments.map((documentId) =>
+          createEntity("selected_document", {
+            documents_id: documentId,
+            offers_id: paramsRqtePrincipal.offers_id
+          })
+        )
+      );
       alert("Candidature envoyée !");
     } catch (err) {
       alert("Erreur : " + err.message);
@@ -103,8 +118,8 @@ export default function PostulerPage() {
 
       <form className="ApplyForm" onSubmit={handleSubmit}>
         <h2>Vos informations</h2>
-        <label>Email <input type="text" name="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required/></label>
-        <label>Téléphone <input type="tel" name="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required/></label>
+        <label>Email <input type="email" name="email" value={form.candidate_email} onChange={(e) => setForm({ ...form, candidate_email: e.target.value })} required/></label>
+        <label>Téléphone <input type="tel" name="phone" value={form.candidate_phone} onChange={(e) => setForm({ ...form, candidate_phone: e.target.value })} required/></label>
         <label>Message <textarea name="message" placeholder="Votre message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required /> </label>
 
         <h2>Documents joints</h2>

@@ -50,18 +50,25 @@
   margin-top: 20px;
   margin-bottom: 10px;
 }
+
 .ApplyForm label {
   display: block;
   margin-bottom: 15px;
   color: #475569;
   font-weight: 600;
 }
-.ApplyForm input {
+
+.ApplyForm input,
+.ApplyForm textarea {
   width: 100%;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
   margin-top: 5px;
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 45px;
+  max-height: 350px;
 }
 
 /* === Sélecteur de documents === */

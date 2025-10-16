@@ -21,13 +21,10 @@ export async function fetchList(module, query = "") {
 }
 
 // http://localhost/api/user/create?p:email=hugo.test@gmail.com&p:password=ttt222&p:last_name=ln&p:first_name=fn
-export async function createEntity(module, params, fields) {
-  const fData = {};
-  // for (const [k, v] of Object.entries(fields)) fData[`f:${k}`] = v;
-
+export async function createEntity(module, params) {
   const pData = {};
   for (const [k, v] of Object.entries(params)) pData[`p:${k}`] = v;
-  const body = JSON.stringify({ ...pData, ...fData });
+  const body = JSON.stringify({ ...pData });
   const res = await fetch(`${API_BASE}/${module}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
