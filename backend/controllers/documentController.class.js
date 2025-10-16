@@ -10,7 +10,7 @@ export class DocumentController extends BaseController {
   static lockedParams = [];
   static lockedFields = [];
 
-  // 📥 GET
+  // GET
   static async get(req, res) {
     try {
       const params = this.extractParams(req, res);
@@ -33,7 +33,7 @@ export class DocumentController extends BaseController {
     }
   }
 
-  // ✏️ UPDATE
+  // UPDATE
   static async update(req, res) {
     try {
       const params = this.extractParams(req, res);
@@ -80,8 +80,8 @@ export class DocumentController extends BaseController {
 
   static async createWithFiles(req, res) {
     try {
-      console.log("📥 req.body =", req.body);
-      console.log("📎 req.file =", req.file);
+      console.log(" req.body =", req.body);
+      console.log(" req.file =", req.file);
 
       if (!req.file) {
         return res.status(400).json({ error: "Aucun fichier reçu" });
@@ -141,7 +141,7 @@ export class DocumentController extends BaseController {
       const fileName = document[0].name;
       const filePath = path.join(process.cwd(), "uploads", fileName);
 
-      // 2️⃣ Supprimer le fichier
+      // remove f
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log(`✅ Fichier supprimé : ${fileName}`);
@@ -149,7 +149,7 @@ export class DocumentController extends BaseController {
         console.log(`⚠️ Fichier introuvable sur le disque : ${fileName}`);
       }
 
-      // 3️⃣ Supprimer en base
+      //  Supprimer en bdd
       await ClassModel.delete({ id });
 
       return res.json({ message: "Document supprimé avec succès" });

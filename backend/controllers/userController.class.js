@@ -34,7 +34,7 @@ export class UserController extends BaseController {
         ClassModel,
         this.extractParams(req, res),
         this.table,
-        this.tableColumns,
+        this.tableColumns, 
         this.lockedParams,
         this.lockedFields
       );
