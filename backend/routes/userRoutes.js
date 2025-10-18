@@ -1,5 +1,6 @@
 import express from 'express';
 import { UserController as ClassController } from '../controllers/userController.class.js';
+import { checkPermission } from '../middlewares/checkPermission.js';
 
 const router = express.Router(); 
 
@@ -8,7 +9,7 @@ const router = express.Router();
 
 // user \\
 router.get('/', (req, res) => ClassController.get(req, res));
-router.get('/search', (req, res) => ClassController.get(req, res)); // GET /users/search?email=... -> recherche un utilisateur par email
+router.get('/search', checkPermission('user', 'select'), (req, res) => ClassController.get(req, res)); // GET /users/search?email=... -> recherche un utilisateur par email
 //router.get('/user', (req, res) => ClassController.getUser0(req, res));
 
 router.post('/search', ClassController.get); // POST /users/search -> recherche un utilisateur par email (ex: pour formulaire avec body) // deprecated \\
@@ -31,3 +32,10 @@ router.get('/auth', (req, res) => ClassController.auth(req, res)); // authentifi
 
 // Obligatoire : export par défaut pour le lazy loader \\
 export default router;
+
+/*
+router.get('/', checkPermission('user', 'view'), (req, res) => ClassController.get(req, res));
+router.post('/', checkPermission('user', 'create'), (req, res) => ClassController.create(req, res));
+router.put('/', checkPermission('user', 'update'), (req, res) => ClassController.update(req, res));
+router.delete('/', checkPermission('user', 'delete'), (req, res) => ClassController.delete(req, res));
+*/

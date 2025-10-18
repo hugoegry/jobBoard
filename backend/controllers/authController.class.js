@@ -1,11 +1,14 @@
 import { json } from 'express';
 import { UserModel as ClassModel } from '../models/userModel.class.js';
+import { CompanyMemberModel as ClassModelSocetyMembers } from '../models/companyMemberModel.class.js';
 import { BaseController } from './baseController.class.js';
 import { hashPassword, verifyAndRehash } from '../utils/password.utils.js';
 
 export class AuthController extends BaseController {
   static table = 'users';
   static tableColumns = ClassModel.getColumns(this.table);
+  static tableSocietyMembership = "company_members";
+  static tableSocietyMembershipColumns = ClassModel.getColumns(this.tableSocietyMembership);
   static allowedParams = ['id', 'email', 'first_name', 'last_name'];
   static lockedParams = [];
   static lockedFields = [];
@@ -32,7 +35,6 @@ export class AuthController extends BaseController {
    * /api/auth/auth?email=admin@example.com&password=63a2492944bfae7323bcb84ff3ff6d9b78edcbb8077c84d39bc37033b6dbffbd&remenber_me=false
    */
   static async authentification(email, password, remember_me, fingerprint = '') {// req.cookies.session_token
-    console.log('parammmmmm', email, password);
     remember_me = (remember_me === 'true' || remember_me === true); // force le bool
     const users = await ClassModel.findByEmail(email, true);
     if (!users?.length) {
@@ -74,10 +76,15 @@ export class AuthController extends BaseController {
     }
 
     delete user.password; // Sécurité
+    // Ajoute des information d emploi dans des société (company membership)  \\
+    const userSocietys = await this._get(ClassModelSocetyMembers, {'p:user_id': user.id}, this.tableSocietyMembership, this.tableSocietyMembershipColumns, [], []);
+    user.societys = userSocietys.statusCode === 200 ? userSocietys.value : [];
+    //
 
     // Gestion du "remember me"
+    console.log('user authenticated successfullyYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:', user); //consolelog
     if (remember_me && !fingerprint) {
-      return { success: false, status: 400, error: 'Missing fingerprint for remember me' };
+      return { success: false, status: 400, error: 'Missing fingerprint for remember me' }; 
     }
 
     let dataForSession = { id_user: user.id };
@@ -105,12 +112,12 @@ export class AuthController extends BaseController {
    * - `valid: false` si aucun token ou session invalide.
    *
    * @example
-   * const result = await AuthController.ckeckSession(req.session, req.cookies);
+   * const result = await AuthController.checkSession(req.session, req.cookies);
    * if(result.valid) console.log(result.userSession);
    */
-  static async ckeckSession(session, cookie) {
-    const token = session?.user?.session_token || cookie?.session_token || null;
-    
+   static async checkSession(session, cookie) {
+    const [token, tokenSource] = session?.user?.session_token ? [session.user.session_token, "session"] : cookie?.session_token ? [cookie.session_token, "cookie"] : [null, null];
+
     if (!token) return {valid: false};
 
     const [tablePrefix, idSession] = token.split('_');
@@ -118,11 +125,10 @@ export class AuthController extends BaseController {
 
     if (tablePrefix != 'tmp' && tablePrefix != 'const') return {valid: false};
 
-    const rows = await ClassModel.getSession(tableSession, idSession);
-
-    if (!rows?.length) return {valid: false};
+    let userSession = await ClassModel.getSession(tableSession, idSession);
+ 
+    if (!userSession || userSession.length === 0) return {valid: false};
     
-    let userSession = rows[0];
     userSession.prefix = tablePrefix;
     userSession.idSession = idSession;
 
@@ -147,7 +153,7 @@ export class AuthController extends BaseController {
    * - 404 : Token invalide ou expiré (`deprecated token !`).
    */
   static async handshakeToken(req, res) {
-    const chekSession = await this.ckeckSession(req.session || null, req.cookies || null);
+    const chekSession = await this.checkSession(req.session || null, req.cookies || null);
     if(chekSession.valid) {
       res.cookie('session_token', `${userSession.tablePrefix}_${userSession.idSession}`, {
         httpOnly: true,
@@ -236,16 +242,16 @@ export class AuthController extends BaseController {
   static async auth(req, res) {
     try {
       const params = this.extractParams(req, res);
-      const chekSession = await this.ckeckSession(req.session || null, req.cookies || null); // ajouter les signed cookie fonctionel \\ au cas ou
+      const chekSession = await this.checkSession(req.session || null, req.cookies || null); // ajouter les signed cookie fonctionel \\ au cas ou
       if(chekSession.valid) {
-        res.cookie('session_token', `${chekSession.userSession.tablePrefix}_${chekSession.userSession.idSession}`, {
+        res.cookie('session_token', `${chekSession.userSession.prefix}_${chekSession.userSession.idSession}`, {
           httpOnly: true,
           secure: false,
           sameSite: 'Strict',
-          maxAge: (chekSession.userSession.tablePrefix == 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
+          maxAge: (chekSession.userSession.prefix == 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
           path: '/', 
         });
-        return res.status(200).json(chekSession.userSession);
+        return res.status(200).json(chekSession.userSession); 
       }
 
       if (!Object.keys(params).length) {

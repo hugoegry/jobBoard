@@ -30,14 +30,7 @@ export class UserController extends BaseController {
    */
   static async get(req, res) {
     try {
-      const value = await this._get(
-        ClassModel,
-        this.extractParams(req, res),
-        this.table,
-        this.tableColumns, 
-        this.lockedParams,
-        this.lockedFields
-      );
+      const value = await this._get(ClassModel, this.extractParams(req, res), this.table, this.tableColumns, this.lockedParams,this.lockedFields);
       res
         .status(value.statusCode)
         .json(value.statusCode === 200 ? value.value : { error: value.error });

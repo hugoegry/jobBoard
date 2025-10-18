@@ -83,11 +83,11 @@ export default function PostulerPage() {
       const paramsRqtePrincipal = { ...form };
       const paramsRqteSelectedDocument = { ...form.documents };
       console.log("Envoi candidature avec params =", paramsRqtePrincipal, "et fields =", paramsRqteSelectedDocument);
-      await createEntity("applications", paramsRqtePrincipal);
+      await createEntity("application", paramsRqtePrincipal);
 
       await Promise.all(
         paramsRqteSelectedDocuments.map((documentId) =>
-          createEntity("selected_document", {
+          createEntity("documentSelected", {
             documents_id: documentId,
             offers_id: paramsRqtePrincipal.offers_id
           })

@@ -4,7 +4,7 @@ export class DocumentSelectedModel extends BaseModel {
     static table = 'selected_document';
 
     static async create(data) {
-        return await this._insert(this.table, data);
+        return await this._insert(this.table, data, '*');
     }
 
     static async update(field, param) {

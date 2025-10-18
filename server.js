@@ -27,22 +27,8 @@ const SECURITE_MODE = process.env.SECURITE_MODE || false;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedModules = [
-  "user",
-  "auth",
-  "offer",
-  "company",
-  "application",
-  "companyMember",
-];
-const preloadedModules = [
-  "user",
-  "auth",
-  "offer",
-  "company",
-  "application",
-  "companyMember",
-];
+const allowedModules = ["user", "auth", "offer", "company", "application", "companyMember"];
+const preloadedModules = ["user", "auth", "offer", "company", "application", "companyMember"];
 const routersCache = {};
 
 //  Préchargement au démarrage \\

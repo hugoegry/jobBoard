@@ -4,7 +4,7 @@ export class ApplicationModel extends BaseModel {
     static table = 'applications';
 
     static async create(data) {
-        return await this._insert(this.table, data);
+        return await this._insert(this.table, data, '*');
     }
 
     static async update(field, param) {

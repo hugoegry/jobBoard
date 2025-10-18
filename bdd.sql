@@ -63,7 +63,7 @@ CREATE TABLE selected_document (
   id_document text NOT NULL REFERENCES document(id) ON DELETE CASCADE,
   id_offers UUID NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
   PRIMARY KEY (id_document, id_offers)
-);
+); -- a lier avec application et non offer
 
 
 
@@ -122,12 +122,13 @@ CREATE INDEX idx_offers_created_at ON offers (created_at);
 
 -- APPLICATIONS
 CREATE TABLE applications (
-  offer_id UUID REFERENCES offers(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  applicant_email TEXT,
-  applicant_phone TEXT,
+  offers_id UUID REFERENCES offers(id) ON DELETE CASCADE,
+  users_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  candidate_email TEXT,
+  candidate_phone TEXT,
   message TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  PRIMARY KEY (offers_id, users_id)
 );
 
 CREATE INDEX idx_applications_offer ON applications(offer_id);

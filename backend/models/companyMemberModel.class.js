@@ -19,4 +19,4 @@ export class CompanyMemberModel extends BaseModel {
         return await this._select(this.table, params, fieleds);
     }
 
-}
+} 

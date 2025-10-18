@@ -20,7 +20,6 @@ export async function fetchList(module, query = "") {
   return handleResponse(res);
 }
 
-// http://localhost/api/user/create?p:email=hugo.test@gmail.com&p:password=ttt222&p:last_name=ln&p:first_name=fn
 export async function createEntity(module, params) {
   const pData = {};
   for (const [k, v] of Object.entries(params)) pData[`p:${k}`] = v;

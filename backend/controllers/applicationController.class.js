@@ -3,12 +3,11 @@ import { ApplicationModel as ClassModel } from '../models/applicationModel.class
 import { BaseController } from './baseController.class.js';
 
 export class ApplicationController extends BaseController {
-    static table = 'application';
+    static table = 'applications';
     static tableColumns = ClassModel.getColumns(this.table);
     static allowedParams = [];
     static lockedParams = [];
     static lockedFields = [];
-  
 
     static async get(req, res) {
       try {
