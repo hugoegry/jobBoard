@@ -31,12 +31,14 @@ function FormConnexion() {
       alert("Veuillez remplir tous les champs !");
       return;
     }
+
     let hashedPassword = await hashPassword(password);
+
     try {
       // Construction de la query string
       const query = new URLSearchParams({
         email: email,
-        password: hashedPassword, // mot de passe en clair
+        password: hashedPassword,
         remember_me: rememberMe,
       }).toString();
 
@@ -48,6 +50,7 @@ function FormConnexion() {
       console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
+        // 🔹 Stockage des infos utilisateur
         sessionStorage.setItem("userobj", JSON.stringify(data));
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
@@ -57,6 +60,36 @@ function FormConnexion() {
         sessionStorage.setItem("userPhone", data.phone);
         window.dispatchEvent(new Event("storage"));
         setIsConnected(true);
+
+        fetch(`http://localhost/api/companyMember/search?p:user_id=${data.id}`)
+          .then((res) => {
+            if (!res.ok) {
+              // Si la réponse n'est pas OK
+              sessionStorage.setItem("C.role", "user");
+              window.dispatchEvent(new Event("storage"));
+              return null;
+            }
+            return res.json();
+          })
+          .then((companyData) => {
+            if (companyData && companyData.length > 0) {
+              // Si on a bien reçu des données
+              sessionStorage.setItem("C.role", companyData[0].role);
+            } else {
+              // Si aucune donnée n'est retournée
+              sessionStorage.setItem("C.role", "user");
+            }
+            window.dispatchEvent(new Event("storage"));
+          })
+          .catch(() => {
+            // Si le fetch plante (erreur réseau, etc.)
+            sessionStorage.setItem("C.role", "user");
+            window.dispatchEvent(new Event("storage"));
+          });
+
+        // 🔹 Fetch pour récupérer le rôle et mettre à jour isRecruter
+
+        // Navigation après login
         navigate("/");
       } else {
         alert(data.error || "Identifiants invalides !");

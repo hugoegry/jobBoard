@@ -1,0 +1,91 @@
+.applications-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.applications-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.empty-text {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.application-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.application-card:hover {
+  transform: translateY(-5px);
+}
+
+.application-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.company-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.company-name {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status.En-Attente {
+  background: #e4af65;
+  color: white;
+}
+
+.status.Acceptée {
+  background: #5cb85c;
+  color: white;
+}
+
+.status.Refusée {
+  background: #d9534f;
+  color: white;
+}
+
+.application-body p {
+  margin: 5px 0;
+  color: #444;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.application-body strong {
+  color: #222;
+}

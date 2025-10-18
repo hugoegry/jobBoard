@@ -1,0 +1,105 @@
+/* Container principal */
+.vue-offer-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Carte de l'offre */
+.vue-offer-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.vue-offer-title {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.vue-offer-company {
+  font-weight: bold;
+  color: #555;
+}
+
+.vue-offer-location {
+  color: #777;
+}
+
+.vue-offer-description {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Bouton pour voir/masquer les candidatures */
+.vue-toggle-btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vue-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Liste des candidatures */
+.vue-applications-list {
+  margin-top: 2rem;
+}
+
+.vue-applications-title {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Carte de chaque candidature */
+.vue-application-card {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Informations du candidat */
+.vue-application-info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.vue-application-info a:hover {
+  text-decoration: underline;
+}
+
+/* Actions sur le candidat (Accepter / Refuser) */
+.vue-application-actions button {
+  padding: 0.4rem 0.8rem;
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.vue-application-actions button:hover {
+  transform: scale(1.05);
+}
+
+.vue-accept-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.vue-reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
