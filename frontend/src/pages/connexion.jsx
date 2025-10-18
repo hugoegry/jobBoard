@@ -75,6 +75,7 @@ function FormConnexion() {
             if (companyData && companyData.length > 0) {
               // Si on a bien reçu des données
               sessionStorage.setItem("C.role", companyData[0].role);
+              sessionStorage.setItem("C.id", companyData[0].company_id);
             } else {
               // Si aucune donnée n'est retournée
               sessionStorage.setItem("C.role", "user");
