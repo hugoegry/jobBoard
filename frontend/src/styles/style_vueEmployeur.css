@@ -1,0 +1,122 @@
+/* Conteneur global */
+.vue-offer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto; /* centre le contenu */
+}
+
+/* Carte d'offre */
+.vue-offer-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Titre et infos de l'offre */
+.vue-offer-title {
+  margin: 0 0 5px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.vue-offer-company,
+.vue-offer-location,
+.vue-offer-description {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Bouton voir/masquer candidatures */
+.vue-toggle-btn {
+  padding: 6px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.vue-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Liste des candidatures */
+.vue-applications-list {
+  margin-top: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+/* Carte candidature compacte */
+.vue-application-card {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column; /* infos au-dessus, boutons en dessous */
+  gap: 8px;
+}
+
+/* Infos de la candidature */
+.vue-application-info p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+}
+
+/* Actions candidature */
+.vue-application-actions {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
+}
+
+.vue-application-actions button {
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.vue-accept-btn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.vue-accept-btn:hover {
+  background-color: #218838;
+}
+
+.vue-reject-btn {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.vue-reject-btn:hover {
+  background-color: #c82333;
+}
+
+/* Responsivité */
+@media (max-width: 600px) {
+  .vue-offer-container {
+    padding: 10px;
+  }
+
+  .vue-application-card {
+    padding: 8px;
+  }
+
+  .vue-application-actions button {
+    flex: 1;
+  }
+}

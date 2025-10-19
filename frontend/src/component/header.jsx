@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import logo from "../asset/1000009342-removebg-preview.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRecruter, setIsRecruter] = useState(false);
+  const [companyMember, setCompanyMember] = useState([]);
 
   const ReturnAccueil = () => navigate("/");
 
@@ -17,11 +19,14 @@ export default function Header() {
   const handleLogout = () => {
     sessionStorage.removeItem("isConnected");
     sessionStorage.removeItem("userEmail");
+    sessionStorage.removeItem("C.role");
     setIsLoggedIn(false);
 
     window.dispatchEvent(new Event("storage"));
     navigate("/");
   };
+  const navigateToApply = () => navigate("/vueApply");
+  const navigateToVueEmployeur = () => navigate("/vueEmployeur");
 
   useEffect(() => {
     const connected = sessionStorage.getItem("isConnected") === "true";
@@ -29,6 +34,11 @@ export default function Header() {
 
     const handleStorageChange = () => {
       const connected = sessionStorage.getItem("isConnected") === "true";
+      if (sessionStorage.getItem("C.role") === "Recruiter") {
+        setIsRecruter(true);
+      } else {
+        setIsRecruter(false);
+      }
       setIsLoggedIn(connected);
     };
 
@@ -37,7 +47,7 @@ export default function Header() {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-
+  console.log(sessionStorage.getItem["C.role"]);
   return (
     <>
       <Helmet>
@@ -69,13 +79,33 @@ export default function Header() {
           <ul className="BurgerMenu">
             {!isLoggedIn ? (
               <>
-                <li><a onClick={navigateToConnexion}>Se connecter</a></li>
+                <li>
+                  <a onClick={navigateToConnexion}>Se connecter</a>
+                </li>
               </>
             ) : (
               <>
-                <li><a href="#" onClick={navigateToMyAccount}>Mon compte</a></li>
-                <li><a href="#" onClick={handleLogout}>Se déconnecter</a></li>
-                <li><a onClick={navigateToAdmin}>Admin</a></li>
+                <li>
+                  <a href="#" onClick={navigateToMyAccount}>
+                    Mon compte
+                  </a>
+                </li>
+                {!isRecruter ? (
+                  <li>
+                    <Link to="/vueApply">Mes Candidatures</Link>
+                  </li>
+                ) : (
+                  <li>
+                    <Link to="/vueEmployeur">Candidature offre</Link>
+                  </li>
+                )}
+
+                <li>
+                  <Link to="/admin">Admin</Link>
+                </li>
+                <li>
+                  <a onClick={handleLogout}>Se déconnecter</a>
+                </li>
               </>
             )}
           </ul>

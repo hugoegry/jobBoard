@@ -4,8 +4,11 @@ import { checkPermission } from '../middlewares/checkPermission.js';
 
 const router = express.Router();
 
-router.get('/', checkPermission('offer', 'select'), (req, res) => ClassController.get(req, res));
-router.get('/search', checkPermission('offer', 'select'), (req, res) => ClassController.get(req, res));
+router.get("/", (req, res) => ClassController.get(req, res));
+router.get("/search", (req, res) => ClassController.get(req, res));
+router.get("/vueEmployeur", (req, res) =>
+  ClassController.getSecondView(req, res)
+);
 
 router.get('/count', checkPermission('offer', 'select'), (req, res) => ClassController.count(req, res));
 

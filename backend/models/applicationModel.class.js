@@ -1,7 +1,7 @@
-import { BaseModel } from './baseModel.class.js';
+import { BaseModel } from "./baseModel.class.js";
 
 export class ApplicationModel extends BaseModel {
-    static table = 'applications';
+  static table = "applications";
 
     static async create(data) {
         return await this._insert(this.table, data, '*');
@@ -11,12 +11,11 @@ export class ApplicationModel extends BaseModel {
         return await this._update(this.table, field, param, returning);
     }
 
-    static async delete(conditions) {
-        return await this._delete(this.table, conditions);
-    }
+  static async delete(conditions) {
+    return await this._delete(this.table, conditions);
+  }
 
-    static async find(params, fieleds) {
-        return await this._select(this.table, params, fieleds);
-    }
-
+  static async find(params, fields) {
+    return await this._select(this.table, params, fields);
+  }
 }
