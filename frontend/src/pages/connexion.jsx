@@ -49,8 +49,7 @@ function FormConnexion() {
       console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
-        console.log(data);
-        sessionStorage.setItem("userobj", JSON.stringify(data.user)); // Stocker l'objet utilisateur complet \\
+        sessionStorage.setItem("userobj", JSON.stringify(data));
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
         sessionStorage.setItem("userFirstName", data.first_name);

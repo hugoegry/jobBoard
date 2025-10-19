@@ -5,11 +5,10 @@ export default function Applications() {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    fetch(
-      `http://localhost/api/application/search?p:id_user=${sessionStorage.getItem(
-        "UserId"
-      )}`
-    )
+    fetch(`http://localhost/api/application/search?p:id_user=${sessionStorage.getItem("UserId")}`,{
+      method: "GET",
+      credentials: "include", // Inclure les cookies pour la session
+    })
       .then((res) => {
         if (!res.ok)
           throw new Error("Erreur lors de la récupération des données");

@@ -19,7 +19,10 @@ export default function VueEmployeur() {
       return;
     }
 
-    fetch(`http://localhost/api/offer/search?p:company_id=${companyId}`)
+    fetch(`http://localhost/api/offer/search?p:company_id=${companyId}`,{
+      method: "GET",
+      credentials: "include", // Inclure les cookies pour la session
+    })
       .then((res) => {
         if (!res.ok)
           throw new Error("Erreur lors de la récupération des offres");
@@ -42,9 +45,10 @@ export default function VueEmployeur() {
       setLoadingApps((prev) => ({ ...prev, [offerId]: true }));
 
       try {
-        const res = await fetch(
-          `http://localhost/api/application/search?p:offers_id=${offerId}&p:status=En-Attente`
-        );
+        const res = await fetch(`http://localhost/api/application/search?p:offers_id=${offerId}&p:status=En-Attente`, {
+          method: "GET",
+          credentials: "include", // Inclure les cookies pour la session
+        });
         const data = res.ok ? await res.json() : [];
         setApplications((prev) => ({ ...prev, [offerId]: data }));
         setErrorApps((prev) => ({ ...prev, [offerId]: null }));
@@ -71,6 +75,7 @@ export default function VueEmployeur() {
     try {
       const response = await fetch("http://localhost/api/application/", {
         method: "PUT",
+        credentials: "include", // Inclure les cookies pour la session
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
