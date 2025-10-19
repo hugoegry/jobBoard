@@ -118,10 +118,10 @@ export class UserModel extends BaseModel {
   static async getSession(typeSession, idSession) {
     const rowsUserProfile = await this.query(`SELECT * FROM get_user_${typeSession}($1);`, [idSession,]);
     if (rowsUserProfile.length === 0) return [];
-    const rowsUserSocietyMembership = await this.query(`SELECT * FROM company_members WHERE user_id = $1;`, [rowsUserProfile[0].id]);
+    const rowsUserSocietyMembership = await this.query(`SELECT * FROM company_members WHERE user_id = $1;`, [rowsUserProfile[0].user_id]);
     return {
       ...rowsUserProfile[0],
-      societies: rowsUserSocietyMembership
+      societys: rowsUserSocietyMembership
     };
   }
 

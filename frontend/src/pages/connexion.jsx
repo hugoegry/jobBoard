@@ -42,13 +42,15 @@ function FormConnexion() {
 
       const response = await fetch(`http://localhost/api/auth?${query}`, {
         method: "GET",
+        credentials: "include", // Inclure les cookies pour la session
       });
 
       const data = await response.json();
       console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
-        sessionStorage.setItem("userobj", JSON.stringify(data));
+        console.log(data);
+        sessionStorage.setItem("userobj", JSON.stringify(data.user)); // Stocker l'objet utilisateur complet \\
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
         sessionStorage.setItem("userFirstName", data.first_name);
@@ -91,6 +93,7 @@ function FormConnexion() {
     try {
       const response = await fetch("http://localhost/api/auth/create", {
         method: "POST",
+        credentials: "include", // Inclure les cookies pour la session
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           "p:email": email,

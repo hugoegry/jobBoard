@@ -8,20 +8,29 @@ export default function PostulerPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const userId = sessionStorage.getItem("UserId");
-  if (!userId)  { // si pas connecté, redirige vers connexion
+  const userStr = sessionStorage.getItem("userobj");
+  const user = userStr ? JSON.parse(userStr) : null;
+  console.log("User from sessionStorage:", user);
+  if (!user)  { // si pas connecté, redirige vers connexion
     alert("Veuillez vous connecter pour postuler.");
     navigate("/connexion");
   }
-  // const offerId = new URLSearchParams(location.search).get("offerId"); old si parm ?element=element
+
   const { offerId } = useParams();
+
+  const [notification, setNotification] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+
+  const [checkBackData, setCheckBackData] = useState(null);
+  const [checkBackLoading, setCheckBackLoading] = useState(true);
 
   const [offer, setOffer] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [form, setForm] = useState({
     offers_id: offerId,
-    users_id: userId,
-    candidate_phone: "",
-    candidate_email: "",
+    users_id: user.user_id,
+    candidate_phone: user ? user.phone : "",
+    candidate_email: user ? user.email : "",
     message: "",
     documents: [],
   });
@@ -40,10 +49,49 @@ export default function PostulerPage() {
 
   // charge les doc add filtre de secu par user document \\
   useEffect(() => {
-    fetchList(`document?p:id_user=${userId}`)
+    fetchList(`document?p:id_user=${user.user_id}`)
       .then((data) => setDocuments(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 0) {
+          clearInterval(interval);
+          navigate("/jobs");
+          return 0;
+        }
+        return +(prev - 0.1).toFixed(2);
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [navigate, countdown !== null]);
+
+
+  // requête parallèle
+  useEffect(() => {
+  const fetchCheckBack = async () => {
+    try {
+      const data = await fetchList("application", `p:offers_id=${offerId}&p:users_id=${user.user_id}`); // adapter le module
+      setCheckBackData(data);
+      setNotification({
+        message: "Vous avez déjà postulé à cette offre ⚠️",
+        actionText: "Retour aux offres",
+      });
+      setCountdown(5.0);
+    } catch (err) {
+      console.error("Erreur checkBack :", err.message);
+    } finally {
+      setCheckBackLoading(false);
+    }
+  };
+
+  fetchCheckBack();
+}, []);
+
 
   // add doc 
   const handleCreateDoc = async () => {
@@ -80,20 +128,38 @@ export default function PostulerPage() {
     e.preventDefault();
     setLoading(true);
     try {
+
+      if (checkBackLoading) {
+        await new Promise((resolve) => {
+          const interval = setInterval(() => {
+            if (!checkBackLoading) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 100);
+        });
+      }
+
       const paramsRqtePrincipal = { ...form };
-      const paramsRqteSelectedDocument = { ...form.documents };
-      console.log("Envoi candidature avec params =", paramsRqtePrincipal, "et fields =", paramsRqteSelectedDocument);
+      const paramsRqteSelectedDocuments = [...form.documents];
+
+      console.log("Envoi candidature avec params =", paramsRqtePrincipal, "et fields =", paramsRqteSelectedDocuments);
       await createEntity("application", paramsRqtePrincipal);
 
       await Promise.all(
-        paramsRqteSelectedDocuments.map((documentId) =>
-          createEntity("documentSelected", {
-            documents_id: documentId,
-            offers_id: paramsRqtePrincipal.offers_id
-          })
-        )
+        paramsRqteSelectedDocuments.map(async (documentId) => {
+          const returneddata = await createEntity("documentSelected", {
+            id_document: documentId,
+            id_offers: paramsRqtePrincipal.offers_id
+          });
+        })
       );
-      alert("Candidature envoyée !");
+      //alert("Candidature envoyée !");
+      setNotification({
+        message: "Votre candidature a bien été envoyée 🎉",
+        actionText: "Retour aux offres",
+      });
+      setCountdown(5.0);
     } catch (err) {
       alert("Erreur : " + err.message);
     } finally {
@@ -102,7 +168,7 @@ export default function PostulerPage() {
   };
 
   return (
-    <section className="ApplySection">
+    <section className="ApplySection" style={{ pointerEvents: notification ? "none" : "auto"}}>
       {offer ? (
         <div className="OfferRecap">
           <h1>{offer.type} - {offer.title}</h1>
@@ -153,8 +219,28 @@ export default function PostulerPage() {
           </div>
         )}
 
-        <button type="submit" className="Ws-Btn-Submit" disabled={loading || !offer}>{loading ? "Envoi..." : "Postuler à cette offre"}</button>
+        {/* <button type="submit" className="Ws-Btn-Submit" disabled={loading || !offer}>{loading ? "Envoi..." : "Postuler à cette offre"}</button> */}
+        <button
+          type="submit"
+          className="Ws-Btn-Submit"
+          disabled={loading || checkBackLoading || !offer}
+        >
+          {(loading || checkBackLoading) ? <span className="loader" /> : "Postuler à cette offre"}
+        </button>
       </form>
+      {notification && (
+        <div className="NotificationOverlay">
+          <div className="NotificationBox">
+            <h2>{notification.message}</h2>
+            <button className="Ws-Btn-Submit" onClick={() => navigate("/jobs")}>{notification.actionText}</button>
+            <p className="AutoRedirectText">Redirection automatique dans {(countdown).toFixed(1)} secondes...</p>
+            <div className="CountdownBar">
+              <div className="CountdownProgress" style={{ width: `${(countdown / 5) * 100}%` }} />
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }

@@ -12,7 +12,10 @@ function Accueil() {
 
   // Récupération du nombre d'annonces au montage
   useEffect(() => {
-    fetch("http://localhost/api/offer/count")
+    fetch("http://localhost/api/offer/count", {
+      method: "GET",
+      credentials: "include", // Inclure les cookies pour la session
+    })
       .then((res) => res.json())
       .then((data) => {
         setNbAnnonce(data.number);

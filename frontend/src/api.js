@@ -16,7 +16,10 @@ async function handleResponse(res) {
 
 export async function fetchList(module, query = "") {
   const url = `${API_BASE}/${module}${query ? "?" + query : ""}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    method: "GET",
+    credentials: "include", // Inclure les cookies pour la session
+  });
   return handleResponse(res);
 }
 
@@ -26,6 +29,7 @@ export async function createEntity(module, params) {
   const body = JSON.stringify({ ...pData });
   const res = await fetch(`${API_BASE}/${module}`, {
     method: "POST",
+    credentials: "include", // Inclure les cookies pour la session
     headers: { "Content-Type": "application/json" },
     body,
   });
@@ -41,6 +45,7 @@ export async function updateEntity(module, params, fields) {
   const body = JSON.stringify({ ...pData, ...fData });
   const res = await fetch(`${API_BASE}/${module}`, {
     method: "PUT",
+    credentials: "include", // Inclure les cookies pour la session
     headers: { "Content-Type": "application/json" },
     body,
   });
@@ -53,6 +58,7 @@ export async function deleteEntity(module, params) {
   const body = JSON.stringify(pData);
   const res = await fetch(`${API_BASE}/${module}`, {
     method: "DELETE",
+    credentials: "include", // Inclure les cookies pour la session
     headers: { "Content-Type": "application/json" },
     body,
   });

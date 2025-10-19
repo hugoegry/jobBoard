@@ -29,7 +29,10 @@ function JobPages() {
     const LienFetch =
       params.length > 0 ? `${baseURL}?${params.join("&")}` : baseURL;
 
-    fetch(LienFetch)
+    fetch(LienFetch, {
+      method: "GET",
+      credentials: "include", // Inclure les cookies pour la session
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Erreur lors de la requête");
         return res.json();

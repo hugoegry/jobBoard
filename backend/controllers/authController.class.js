@@ -13,6 +13,19 @@ export class AuthController extends BaseController {
   static lockedParams = [];
   static lockedFields = [];
 
+
+
+  static async createCookie(res, value, type='tmp') {
+    log.log("Creating cookie with value:", value, "and type:", type);
+    res.cookie('session_token', value, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Strict',
+      maxAge: (type === 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1h // 25min
+      path: '/', 
+    });
+  }
+
   /**
    * Authentifie un utilisateur avec email et mot de passe, gère les sessions et le "remember me".
    *
@@ -81,8 +94,7 @@ export class AuthController extends BaseController {
     user.societys = userSocietys.statusCode === 200 ? userSocietys.value : [];
     //
 
-    // Gestion du "remember me"
-    console.log('user authenticated successfullyYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:', user); //consolelog
+    // Gestion du "remember me" \\
     if (remember_me && !fingerprint) {
       return { success: false, status: 400, error: 'Missing fingerprint for remember me' }; 
     }
@@ -117,6 +129,8 @@ export class AuthController extends BaseController {
    */
    static async checkSession(session, cookie) {
     const [token, tokenSource] = session?.user?.session_token ? [session.user.session_token, "session"] : cookie?.session_token ? [cookie.session_token, "cookie"] : [null, null];
+    console.log('log du cookie', cookie.session_token)
+    console.log('Checking session with token from', tokenSource, ':', token);
 
     if (!token) return {valid: false};
 
@@ -126,11 +140,13 @@ export class AuthController extends BaseController {
     if (tablePrefix != 'tmp' && tablePrefix != 'const') return {valid: false};
 
     let userSession = await ClassModel.getSession(tableSession, idSession);
+    console.log('User session fetched from', tokenSource, ':', userSession);
  
     if (!userSession || userSession.length === 0) return {valid: false};
     
     userSession.prefix = tablePrefix;
     userSession.idSession = idSession;
+    session.user = userSession; // set / re set la session \\
 
     return { valid: true, userSession }
   }
@@ -155,13 +171,14 @@ export class AuthController extends BaseController {
   static async handshakeToken(req, res) {
     const chekSession = await this.checkSession(req.session || null, req.cookies || null);
     if(chekSession.valid) {
-      res.cookie('session_token', `${userSession.tablePrefix}_${userSession.idSession}`, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Strict',
-        maxAge: (userSession.tablePrefix == 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
-        path: '/', 
-      });
+      // res.cookie('session_token', `${userSession.tablePrefix}_${userSession.idSession}`, {
+      //   httpOnly: true,
+      //   secure: false,
+      //   sameSite: 'Strict',
+      //   maxAge: (userSession.tablePrefix == 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
+      //   path: '/', 
+      // });
+      this.createCookie(res, `${userSession.tablePrefix}_${userSession.idSession}`, userSession.tablePrefix);
       return res.status(200).json(chekSession.userSession);
     }
     return res.status(404).json({ error: 'deprecated token !' });
@@ -205,13 +222,14 @@ export class AuthController extends BaseController {
         return res.status(result.status).json({ error: result.error });
       }
 
-      res.cookie('session_token', result.user.session_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Strict',
-        maxAge: (params.remenber_me == true ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
-        path: '/', 
-      });
+      // res.cookie('session_token', result.user.session_token, {
+      //   httpOnly: true,
+      //   secure: false,
+      //   sameSite: 'Strict',
+      //   maxAge: (params.remenber_me == true ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
+      //   path: '/', 
+      // });
+      this.createCookie(res, result.user.session_token, (params.remenber_me == true ? 'const' : 'tmp'));
 
       req.session.user = result.user;
       return res.status(200).json(result.user);
@@ -244,14 +262,8 @@ export class AuthController extends BaseController {
       const params = this.extractParams(req, res);
       const chekSession = await this.checkSession(req.session || null, req.cookies || null); // ajouter les signed cookie fonctionel \\ au cas ou
       if(chekSession.valid) {
-        res.cookie('session_token', `${chekSession.userSession.prefix}_${chekSession.userSession.idSession}`, {
-          httpOnly: true,
-          secure: false,
-          sameSite: 'Strict',
-          maxAge: (chekSession.userSession.prefix == 'const' ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
-          path: '/', 
-        });
-        return res.status(200).json(chekSession.userSession); 
+        this.createCookie(res, `${chekSession.userSession.prefix}_${chekSession.userSession.idSession}`, chekSession.userSession.prefix);
+        return res.status(200).json({ success: true, status: 200, user: chekSession.userSession });
       }
 
       if (!Object.keys(params).length) {
@@ -271,14 +283,7 @@ export class AuthController extends BaseController {
         return res.status(result.status).json({ error: result.error });
       }
 
-      // Gestion du cookie ici uniquement
-      res.cookie('session_token', result.user.session_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Strict',
-        maxAge: (params.remenber_me == true ? 365 * 24 * 60 * 60 * 1000 : 25 * 60 * 1000),  // 1 // 25min
-        path: '/', 
-      });
+      this.createCookie(res, result.user.session_token, (params.remenber_me == true ? 'const' : 'tmp')); // Gestion du cookie ici uniquement
 
       req.session.user = result.user;
       return res.status(200).json(result.user);

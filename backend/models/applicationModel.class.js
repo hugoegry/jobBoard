@@ -7,8 +7,8 @@ export class ApplicationModel extends BaseModel {
         return await this._insert(this.table, data, '*');
     }
 
-    static async update(field, param) {
-        return await this._update(this.table, field, param);
+    static async update(field, param, returning = '*') {
+        return await this._update(this.table, field, param, returning);
     }
 
     static async delete(conditions) {

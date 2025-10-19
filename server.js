@@ -12,13 +12,31 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 app.use(cookieParser());
+//app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true // autoriser l envoi de cookies/session \\
+}));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret-def",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      maxAge: 1000 * 60 * 20, // 20 min
+      httpOnly: true,
+      sameSite: 'none',
+      secure: false, // pour HTTPS
+    },
+  })
+);
 
-// On rend les fichiers statiques accessibles via /uploads
-app.use("/uploads", express.static("frontend/public/uploads"));
+app.use("/uploads", express.static("frontend/public/uploads")); // On rend les fichiers statiques accessibles via /uploads \\
+
 // pour forms URL-encoded
 const PORT = process.env.PORT || 80;
 const SECURITE_MODE = process.env.SECURITE_MODE || false;
@@ -50,21 +68,6 @@ for (const moduleName of preloadedModules) {
       });
   }
 }
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "secret-def",
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: {
-      maxAge: 1000 * 60 * 20, // 20 min
-      httpOnly: true,
-      sameSite: "Strict",
-      secure: false, // pour HTTPS
-    },
-  })
-);
 
 app.use("/api/:module", async (req, res, next) => {
   const moduleName = req.params.module;

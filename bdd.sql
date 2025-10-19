@@ -89,7 +89,7 @@ CREATE TABLE company_members (
   company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   role company_role NOT NULL,
-  join_at TIMESTAMPTZ DEFAULT now(),
+  join_when TIMESTAMPTZ DEFAULT now(),
   PRIMARY KEY (company_id, user_id)
 );
 
@@ -101,24 +101,23 @@ CREATE TYPE offer_type AS ENUM ('cdi','cdd','alternance','mi-temps','freelance',
 CREATE TABLE offers (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-  created_by UUID REFERENCES users(id) ON DELETE SET NULL, -- creator
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   location TEXT NOT NULL,
   tags TEXT[], -- e.g. ['informatique','dev','numerique']
   type offer_type NOT NULL,
   external_url TEXT, -- if set, redirect applicants there (external apply)
-  collect_applications boolean DEFAULT true, -- si on souhaite collecter les candidatures via la plateforme
+  collect_application boolean DEFAULT true, -- si on souhaite collecter les candidatures via la plateforme
   recruiter_email TEXT,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  created_when TIMESTAMPTZ DEFAULT now(),
+  updated_when TIMESTAMPTZ DEFAULT now()
 );
 
 -- Full text & trigram indexes for fast search
 CREATE INDEX idx_offers_title_trgm ON offers USING gin (title gin_trgm_ops);
 CREATE INDEX idx_offers_tags_gin ON offers USING gin (tags);
 CREATE INDEX idx_offers_location_trgm ON offers USING gin (location gin_trgm_ops);
-CREATE INDEX idx_offers_created_at ON offers (created_at);
+CREATE INDEX idx_offers_created_when ON offers (created_when);
 
 -- APPLICATIONS
 CREATE TABLE applications (
@@ -127,7 +126,7 @@ CREATE TABLE applications (
   candidate_email TEXT,
   candidate_phone TEXT,
   message TEXT,
-  created_at TIMESTAMPTZ DEFAULT now(),
+  created_when TIMESTAMPTZ DEFAULT now(),
   PRIMARY KEY (offers_id, users_id)
 );
 
@@ -209,3 +208,49 @@ SELECT
     o.updated_when AS offers_updated_when
 FROM offers o
 JOIN company c ON c.id = o.company_id;
+
+
+
+
+
+
+
+
+----
+
+-- Crée ou remplace la vue
+CREATE OR REPLACE VIEW offers_with_applications AS
+SELECT 
+    o.id,
+    o.company_id,
+    o.title,
+    o.description,
+    o.location,
+    o.tags,
+    o.type,
+    o.salary,
+    o.external_url,
+    o.collect_application,
+    o.recruiter_email,
+    o.created_when,
+    o.updated_when,
+    COUNT(a.users_id) AS applications_count
+FROM 
+    offers AS o
+JOIN 
+    applications AS a 
+    ON a.offers_id = o.id
+GROUP BY 
+    o.id,
+    o.company_id,
+    o.title,
+    o.description,
+    o.location,
+    o.tags,
+    o.type,
+    o.salary,
+    o.external_url,
+    o.collect_application,
+    o.recruiter_email,
+    o.created_when,
+    o.updated_when;

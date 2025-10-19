@@ -33,11 +33,10 @@ function AccountPage() {
     if (savedUser.file) {
       setFilePreview(`http://localhost:3000/uploads/${savedUser.file}`);
     }
-    fetch(
-      `http://localhost/api/document/search?p:id_user=${sessionStorage.getItem(
-        "UserId"
-      )}`
-    )
+    fetch(`http://localhost/api/document/search?p:id_user=${sessionStorage.getItem("UserId")}`, {
+      method: "GET",
+      credentials: "include", // Inclure les cookies pour la session
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des données");
@@ -86,6 +85,7 @@ function AccountPage() {
 
       const responseUser = await fetch("http://localhost/api/user/", {
         method: "PUT",
+        credentials: "include", // Inclure les cookies pour la session
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
@@ -110,6 +110,7 @@ function AccountPage() {
 
         const responseDoc = await fetch("http://localhost/api/document/", {
           method: "POST",
+          credentials: "include", // Inclure les cookies pour la session
           body: formDataDocument,
         });
 
@@ -137,10 +138,9 @@ function AccountPage() {
     const idDocumentDelete = document.getElementById("Ws-Select-File").value;
 
     try {
-      const response = await fetch(
-        `http://localhost/api/document/${idDocumentDelete}`,
-        {
+      const response = await fetch(`http://localhost/api/document/${idDocumentDelete}`, {
           method: "DELETE",
+          credentials: "include", // Inclure les cookies pour la session
         }
       );
 
