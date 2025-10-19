@@ -286,7 +286,7 @@ export class AuthController extends BaseController {
       this.createCookie(res, result.user.session_token, (params.remenber_me == true ? 'const' : 'tmp')); // Gestion du cookie ici uniquement
 
       req.session.user = result.user;
-      return res.status(200).json(result.user);
+      return res.status(200).json(result);
     } catch (err) {
       if (!res.headersSent) {
         res.status(500).json({ error: err.message });

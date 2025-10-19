@@ -84,14 +84,7 @@ function Accueil() {
             {contract && <span>Type de Contrat</span>}
           </div>
 
-          <button
-            type="button"
-            className="Ws-Btn-Submit"
-            id="Ws-Btn-Submit"
-            onClick={handleSearch}
-          >
-            Rechercher
-          </button>
+          <button type="button" className="Ws-Btn-Submit" id="Ws-Btn-Submit" onClick={handleSearch}>Rechercher</button>
         </form>
       </div>
 

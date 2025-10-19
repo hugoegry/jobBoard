@@ -3,17 +3,23 @@ import {AuthController as classAuth} from '../controllers/authController.class.j
 const permissionsMatrix = {
   admin: {
     user: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
-    document: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
     company: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
     offer: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
-    application: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}}
+    application: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    company_member: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    company: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    document: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    document_selected: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}}
   },
   user: {
     user: {create: {restricted:  true, type: 'never'}, update: {restricted: true, type: 'own'}, delete: {restricted:  true, type: 'own'}, select: {restricted:  true, type: 'own'}},
-    document: {create: {restricted:  true, type: 'own'}, update: {restricted: true, type: 'own'}, delete: {restricted:  true, type: 'own'}, select: {restricted:  true, type: 'own'}},
     company: {create: {restricted:  true, type: 'never'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'never'}, select: {restricted:  false, type: 'all'}},
     offer: {create: {restricted:  true, type: 'societyMembership'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'societyMembership'}, select: {restricted:  false, type: 'all'}},
-    application: {create: {restricted:  false, type: 'all'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'societyMembership'}, select: {restricted:  false, type: 'all'}}
+    application: {create: {restricted:  false, type: 'all'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'societyMembership'}, select: {restricted:  false, type: 'all'}},
+    company_member: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    company: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    document: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
+    document_selected: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}}
   }
 };
 
@@ -61,7 +67,7 @@ const extractParams = (req, res) => {
 
 function hasPermission(user, resource, action, dynamicParam = null) {
   console.log('Checking permission for user:', user, 'resource:', resource, 'action:', action);
-  const userRole = user?.role || 'users';
+  const userRole = user?.role || 'user';
   console.log('User role determined as:', userRole);
   const rolePerms = permissionsMatrix[userRole];
   if (!rolePerms?.[resource]?.[action]) return false;

@@ -1,5 +1,6 @@
 import express from 'express';
 import { AuthController as ClassController } from '../controllers/authController.class.js';
+import { checkPermission } from '../middlewares/checkPermission.js';
 
 const router = express.Router();
 

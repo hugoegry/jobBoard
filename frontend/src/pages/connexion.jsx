@@ -46,7 +46,6 @@ function FormConnexion() {
       });
 
       const data = await response.json();
-      console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
         sessionStorage.setItem("userobj", JSON.stringify(data.user));

@@ -18,11 +18,8 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        {/* 🏠 Page d'accueil */}
         <Route path="/" element={<Accueil />} />
-        {/* 💼 Page des résultats */}
         <Route path="/jobs" element={<JobPages />} />
-        {/* 🧑‍💻 Page Connexion*/}
         <Route path="/connexion" element={<FormConnexion />} />
         <Route path="/MyAccount" element={<AccountInfo />} />
         <Route path="/admin" element={<FrmAdmin />} />

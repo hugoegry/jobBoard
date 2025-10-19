@@ -87,17 +87,9 @@ function JobPages() {
               <p className="ACTags">{job.tags}</p>
               <h1 className="AfterClickTitle">Description</h1>
               <p>{job.company_description}</p>
-              {/* test hugo  */}
               <div className="ActionsJob">
-                <button
-                  type="button"
-                  className="PostulerBtn"
-                  onClick={(e) => handlePostuler(e, job)}
-                >
-                  Postuler
-                </button>
+                <button type="button" className="PostulerBtn" onClick={(e) => handlePostuler(e, job)}>Postuler</button>
               </div>
-              {/* test hugo */}
             </div>
           </div>
         ))
