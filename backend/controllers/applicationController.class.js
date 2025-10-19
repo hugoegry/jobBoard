@@ -14,13 +14,8 @@ export class ApplicationController extends BaseController {
   static async get(req, res) {
     try {
       const params = this.extractParams(req, res);
-      const { filtredParams, filtredFields } = await this.filterValidParams(
-        params,
-        this.tableColumnsView,
-        this.lockedParams,
-        this.lockedFields
-      );
-      const getValue = await ClassModel.find(filtredParams, filtredFields); // Appel dynamique de la méthode \\
+      const { filtredParams, filtredFields } = await this.filterValidParams(params, this.tableColumnsView, this.lockedParams, this.lockedFields);
+      const getValue = await ClassModel.find(filtredParams, filtredFields);
       if (!getValue?.length) {
         return res.status(404).json({
           error: `${this.tableView || this.table} not found`,

@@ -7,6 +7,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRecruter, setIsRecruter] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [companyMember, setCompanyMember] = useState([]);
 
   const ReturnAccueil = () => navigate("/");
@@ -19,8 +20,13 @@ export default function Header() {
   const handleLogout = () => {
     sessionStorage.removeItem("isConnected");
     sessionStorage.removeItem("userEmail");
-    sessionStorage.removeItem("C.role");
+    sessionStorage.removeItem("userobj");
+    sessionStorage.removeItem("UserId");
+    sessionStorage.removeItem("userFirstName");
+    sessionStorage.removeItem("userLastName");
+    sessionStorage.removeItem("userPhone");
     setIsLoggedIn(false);
+    setIsRecruter(false);
 
     window.dispatchEvent(new Event("storage"));
     navigate("/");
@@ -33,21 +39,27 @@ export default function Header() {
     setIsLoggedIn(connected);
 
     const handleStorageChange = () => {
+      const userDataStr = sessionStorage.getItem("userobj");
+      const userData = userDataStr ? JSON.parse(userDataStr) : null;
       const connected = sessionStorage.getItem("isConnected") === "true";
-      if (sessionStorage.getItem("C.role") === "Recruiter") {
-        setIsRecruter(true);
-      } else {
-        setIsRecruter(false);
+      let isRecruiter = false;
+      if (userData && userData.societys) {
+        userData.societys.forEach((society) => {
+          if (society.role === "Recruiter") isRecruiter = true;
+        });
       }
+
+      setIsAdmin(userData && userData.role === "admin");
+      setIsRecruter(isRecruiter);
       setIsLoggedIn(connected);
     };
 
+    handleStorageChange();
+
     window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-  console.log(sessionStorage.getItem["C.role"]);
+
   return (
     <>
       <Helmet>
@@ -85,27 +97,16 @@ export default function Header() {
               </>
             ) : (
               <>
-                <li>
-                  <a href="#" onClick={navigateToMyAccount}>
-                    Mon compte
-                  </a>
-                </li>
-                {!isRecruter ? (
-                  <li>
-                    <Link to="/vueApply">Mes Candidatures</Link>
-                  </li>
-                ) : (
-                  <li>
-                    <Link to="/vueEmployeur">Candidature offre</Link>
-                  </li>
+                <li><a href="#" onClick={navigateToMyAccount}>Mon compte</a></li>
+                {isRecruter && (
+                  <li><Link to="/vueEmployeur">Candidature offre</Link></li>
                 )}
+                <li><Link to="/vueApply">Mes Candidatures</Link></li>
 
-                <li>
-                  <Link to="/admin">Admin</Link>
-                </li>
-                <li>
-                  <a onClick={handleLogout}>Se déconnecter</a>
-                </li>
+                {isAdmin && (
+                  <li><Link to="/admin">Admin</Link></li>
+                )}
+                <li><a onClick={handleLogout}>Se déconnecter</a></li>
               </>
             )}
           </ul>

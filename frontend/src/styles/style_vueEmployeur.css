@@ -96,6 +96,13 @@
 .vue-accept-btn:hover {
   background-color: #218838;
 }
+.vue-pending-btn {
+  background-color: #eb7b13;
+  color: #fff;
+}
+.vue-pending-btn:hover {
+  background-color: #c66a0e;
+}
 
 .vue-reject-btn {
   background-color: #dc3545;
@@ -119,4 +126,29 @@
   .vue-application-actions button {
     flex: 1;
   }
+}
+
+
+
+
+
+.vue-filter-box {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.vue-filter-box label {
+  font-size: 0.85rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vue-filter-box input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
 }

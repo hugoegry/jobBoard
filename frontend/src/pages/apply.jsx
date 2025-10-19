@@ -10,7 +10,6 @@ export default function PostulerPage() {
   const userId = sessionStorage.getItem("UserId");
   const userStr = sessionStorage.getItem("userobj");
   const user = userStr ? JSON.parse(userStr) : null;
-  console.log("User from sessionStorage:", user);
   if (!user)  { // si pas connecté, redirige vers connexion
     alert("Veuillez vous connecter pour postuler.");
     navigate("/connexion");
@@ -75,7 +74,7 @@ export default function PostulerPage() {
   useEffect(() => {
   const fetchCheckBack = async () => {
     try {
-      const data = await fetchList("application", `p:offers_id=${offerId}&p:users_id=${user.user_id}`); // adapter le module
+      const data = await fetchList("application", `p:offer_id=${offerId}&p:users_id=${user.user_id}`); // adapter le module
       setCheckBackData(data);
       setNotification({
         message: "Vous avez déjà postulé à cette offre ⚠️",

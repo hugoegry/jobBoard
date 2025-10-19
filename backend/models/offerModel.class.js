@@ -16,8 +16,8 @@ export class OfferModel extends BaseModel {
         return await this._delete(this.table, conditions);
     }
 
-    static async find(params, fieleds) {
-        return await this._select((this.tableView || this.table), params, fieleds);
+    static async find(params, fields) {
+        return await this._select(this.tableView, params, fields);
     }
 
     static async count(condition = {}, countColumn = '*', extraSql = '') {

@@ -49,7 +49,7 @@ function FormConnexion() {
       console.log("Réponse backend :", data);
 
       if (data.success || data.id) {
-        sessionStorage.setItem("userobj", JSON.stringify(data));
+        sessionStorage.setItem("userobj", JSON.stringify(data.user));
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("isConnected", "true");
         sessionStorage.setItem("userFirstName", data.first_name);
@@ -205,39 +205,15 @@ function FormConnexion() {
           <form method="POST" action="">
             <div id="containerSignIn" className="containerContentForm active">
               <h1>Connexion</h1>
-              <span id="SKH-conexion-texte-left-web">
-                ou utilisez votre mot de passe et votre email
-              </span>
-              <input
-                id="email-login"
-                type="email"
-                name="email"
-                placeholder="Email"
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Mot de passe"
-                id="mdp-login"
-              />
+              <span id="SKH-conexion-texte-left-web">ou utilisez votre mot de passe et votre email</span>
+              <input id="email-login" type="email" name="email" placeholder="Email"/>
+              <input type="password" name="password" placeholder="Mot de passe" id="mdp-login"/>
               <div className="containerRememberMe">
-                <input
-                  type="checkbox"
-                  id="rememberMe-login"
-                  name="rememberMe"
-                />
+                <input type="checkbox" id="rememberMe-login" name="rememberMe"/>
                 <span>Se souvenir de moi</span>
               </div>
-              <a href="#" className="SKH-MDP-OUBLI">
-                Mot de passe oublié ?
-              </a>
-              <button
-                type="button"
-                className="buttonStartAuth"
-                onClick={handleLogin}
-              >
-                Connexion
-              </button>
+              <a href="#" className="SKH-MDP-OUBLI">Mot de passe oublié ?</a>
+              <button type="button" className="buttonStartAuth" onClick={handleLogin}>Connexion</button>
             </div>
           </form>
         </div>
@@ -248,23 +224,15 @@ function FormConnexion() {
             <div className="toggle-panel toggle-left">
               <h1 id="normal">Vous êtes de retour ?</h1>
               <h1 id="mobil">De retour ?</h1>
-              <p>
-                Connectez-vous avec vos identifiants pour accéder pleinement au
-                site.
-              </p>
-              <button className="hidden" id="login" onClick={handleToggle}>
-                Se connecter
-              </button>
+              <p>Connectez-vous avec vos identifiants pour accéder pleinement au
+                site.</p>
+              <button className="hidden" id="login" onClick={handleToggle}>Se connecter</button>
             </div>
             <div className="toggle-panel toggle-right">
               <h1>Bienvenue!</h1>
-              <p>
-                Entrez vos coordonnées personnelles pour pouvoir utiliser toutes
-                les fonctionnalités du site.
-              </p>
-              <button className="hidden" id="register" onClick={handleToggle}>
-                Inscription
-              </button>
+              <p>Entrez vos coordonnées personnelles pour pouvoir utiliser toutes
+                les fonctionnalités du site.</p>
+              <button className="hidden" id="register" onClick={handleToggle}>Inscription</button>
             </div>
           </div>
         </div>

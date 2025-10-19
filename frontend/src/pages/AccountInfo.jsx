@@ -94,7 +94,7 @@ function AccountPage() {
         throw new Error(`Erreur HTTP ${responseUser.status} (user)`);
 
       const dataUser = await responseUser.json();
-      console.log("✅ Réponse user :", dataUser);
+      console.log("Réponse user :", dataUser);
 
       // Mettre à jour les infos en session
       sessionStorage.setItem("userEmail", dataUser[0].email);
@@ -118,7 +118,7 @@ function AccountPage() {
           throw new Error(`Erreur HTTP ${responseDoc.status} (document)`);
 
         const dataDoc = await responseDoc.json();
-        console.log("📄 Réponse document :", dataDoc);
+        console.log(" Réponse document :", dataDoc);
 
         if (dataDoc.file) {
           const fileUrl = `http://localhost:3000/uploads/${dataDoc.file}`;
@@ -145,7 +145,7 @@ function AccountPage() {
       );
 
       const text = await response.text(); // 👈 on lit en texte d'abord
-      console.log("📥 Réponse brute :", text);
+      console.log(" Réponse brute :", text);
 
       let data;
       try {
@@ -162,7 +162,7 @@ function AccountPage() {
         return;
       }
 
-      console.log("✅ Fichier supprimé :", data);
+      console.log(" Fichier supprimé :", data);
     } catch (err) {
       console.error("⚠️ Erreur réseau :", err);
     }

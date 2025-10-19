@@ -219,6 +219,7 @@ body {
   right: -20%;
   color: darkslategrey;
   font-size: 30pt;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.877);
 }
 .spanAnnonce {
   position: relative;
@@ -227,16 +228,18 @@ body {
   right: -80%;
   font-size: 30pt;
   color: darkslategrey;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.877);
 }
 .spanNbAnnonce {
   position: relative;
   display: flex;
   top: -260px;
-  right: -74.5%;
+  right: -76.5%;
   color: darkslategrey;
   font-size: 30pt;
   animation: floatShadow 1s infinite alternate;
   transition: all 0.1s ease-in-out;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.877);
 }
 @keyframes floatShadow {
   0% {

@@ -2,6 +2,7 @@ import { BaseModel } from "./baseModel.class.js";
 
 export class ApplicationModel extends BaseModel {
   static table = "applications";
+  static tableView = "v_applications_detail";
 
     static async create(data) {
         return await this._insert(this.table, data, '*');
@@ -16,6 +17,6 @@ export class ApplicationModel extends BaseModel {
   }
 
   static async find(params, fields) {
-    return await this._select(this.table, params, fields);
+    return await this._select(this.tableView, params, fields);
   }
 }
