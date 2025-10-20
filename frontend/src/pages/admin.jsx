@@ -45,7 +45,7 @@ export default function FrmAdmin() {
   return (
     <>
       {notification && (
-        <div className="NotificationOverlay">
+        <div className="NotificationOverlay2">
           <div className="NotificationBox">
             <h2>{notification.message}</h2>
             <button onClick={() => navigate("/")}>{notification.actionText}</button>
