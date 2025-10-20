@@ -7,7 +7,7 @@ export default function Applications() {
   const userData = userDataStr ? JSON.parse(userDataStr) : null;
 
   useEffect(() => {
-    fetch(`http://localhost/api/application/search?p:id_user=${userData.user_id})}`,{
+    fetch(`http://localhost/api/application/search?p:users_id=${userData.user_id})}`,{
       method: "GET",
       credentials: "include", // Inclure les cookies pour la session
     })
