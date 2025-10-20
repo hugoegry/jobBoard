@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/style_vueEmployeur.css";
+import { fetchList, createEntity, deleteEntity } from "../api";
 
 export default function VueEmployeur() {
   const [offers, setOffers] = useState([]);
@@ -9,7 +10,24 @@ export default function VueEmployeur() {
   const [errorApps, setErrorApps] = useState({}); // { offerId: string }
   const [loadingOffers, setLoadingOffers] = useState(true);
   const [errorOffers, setErrorOffers] = useState(null);
-  const [filters, setFilters] = useState({}); 
+  const [filters, setFilters] = useState({});
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newOffer, setNewOffer] = useState({
+    company_id: "",
+    title: "",
+    description: "",
+    location: "",
+    tags: "",
+    external_url: "",
+    type: "",
+    collect_application: true,
+    recruiter_email: "",
+    salary_min: "",
+    salary_max: "",
+  });
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState(null);
 
   useEffect(() => {
     const userDataStr = sessionStorage.getItem("userobj");
@@ -35,10 +53,84 @@ export default function VueEmployeur() {
       .finally(() => setLoadingOffers(false));
   }, []);
 
+  //-----------------------
+
+  const createOffer = async () => {
+    const userData = JSON.parse(sessionStorage.getItem("userobj"));
+    const companyId = userData?.societys[0]?.company_id;
+
+    if (!companyId) {
+      setCreateError("Aucune entreprise associée à cet utilisateur.");
+      return;
+    }
+
+    if (!newOffer.title || !newOffer.location || !newOffer.description) {
+      setCreateError("Tous les champs sont obligatoires.");
+      return;
+    }
+
+    setCreating(true);
+    setCreateError(null);
+
+    try {
+      const bodyRqte = {
+        "company_id": companyId,
+        "title": newOffer.title,
+        "description": newOffer.description,
+        "location": newOffer.location,
+        "tags": newOffer.tags,
+        "external_url": newOffer.external_url,
+        "type": newOffer.type,
+        "collect_application": newOffer.collect_application,
+        "recruiter_email": newOffer.recruiter_email,
+        "salary": {
+          min_salary: Number(newOffer.salary_min),
+          max_salary: Number(newOffer.salary_max),
+        },
+      };
+
+      const data = await createEntity("offer", bodyRqte);
+      console.log("Réponse création offre :", data);
+
+      if (!data) {
+        throw new Error("Réponse vide du serveur lors de la création de l’offre");
+      }
+
+
+      const createdOffer = Array.isArray(data) ? data[0] : data;
+      console.log("Offre créée :", createdOffer);
+
+      setOffers((prev) => [...prev, createdOffer]);
+      setNewOffer({ title: "", location: "", description: "" });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      setCreateError(err.message);
+    } finally {
+      setCreating(false);
+    }
+  };
+  
+  //-------------------- SUPPRESSION OFFRE --------------------
+  const deleteOffer = async (offerId) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) return;
+    try {
+      console.log("Suppression de l'offre ID :", offerId);
+      await deleteEntity("offer", { id: offerId });
+
+      //if (!response.ok) throw new Error("Erreur lors de la suppression de l’offre");
+
+      setOffers((prev) => prev.filter((offer) => offer.offers_id !== offerId));
+    } catch (err) {
+      console.error(err);
+      alert("Impossible de supprimer l’offre : " + err.message);
+    }
+  };
+
   const toggleApplications = async (offerId) => { // Toggle pour voir les candidatures
     setExpandedOffers((prev) => ({...prev, [offerId]: !prev[offerId],}));
 
-    // Si jamais pas encore chargé, fetch les candidatures
+    // Si jamais pas encore chargé, fetch les candidatures 
     if (!applications[offerId]) {
       setLoadingApps((prev) => ({ ...prev, [offerId]: true }));
 
@@ -136,6 +228,7 @@ export default function VueEmployeur() {
 
   return (
     <div className="vue-offer-container">
+      <button className="vue-create-offer-btn" onClick={() => setIsModalOpen(true)}>+ Nouvelle offre</button>
       {offers.length === 0 ? (
         <p>Aucune offre disponible pour cette entreprise.</p>
       ) : (
@@ -152,6 +245,7 @@ export default function VueEmployeur() {
             <p className="vue-offer-description">{offer.company_description}</p>
 
             <button className="vue-toggle-btn" onClick={() => toggleApplications(offer.offers_id)}>{expandedOffers[offer.offers_id] ? "Masquer les candidatures" : "Voir les candidatures"}</button>
+            <button className="vue-delete-btn" onClick={() => deleteOffer(offer.offers_id)} style={{ backgroundColor: "darkred", color: "white", marginTop: "8px" }}>Supprimer l’offre</button>
               {console.log('applications globales', applications)}
             {expandedOffers[offer.offers_id] && (
               
@@ -182,8 +276,6 @@ export default function VueEmployeur() {
                   return false;
                 })
                 .map((app, index) => (
-                  console.log('application filtrée', app),
-                  console.log('filters pour cette offre', offer.offers_id, '8898989'),
                   <ApplicationCard key={`${offer.offers_id}_${app.users_id}_${index}`} app={app} offerId={offer.offers_id} />
                 ))}
               </div>
@@ -191,6 +283,86 @@ export default function VueEmployeur() {
           </div>
         ))
       )}
+
+      {isModalOpen && (
+        <div className="vue-modal-overlay">
+          <div className="vue-modal">
+            <h3>Créer une nouvelle offre</h3>
+
+            <input
+              type="text"
+              placeholder="Titre"
+              value={newOffer.title}
+              onChange={(e) => setNewOffer({ ...newOffer, title: e.target.value })}
+            />
+            <textarea
+              placeholder="Description"
+              rows={3}
+              value={newOffer.description}
+              onChange={(e) => setNewOffer({ ...newOffer, description: e.target.value })}
+            ></textarea>
+            <input
+              type="text"
+              placeholder="Localisation"
+              value={newOffer.location}
+              onChange={(e) => setNewOffer({ ...newOffer, location: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Tags (séparés par des virgules)"
+              value={newOffer.tags}
+              onChange={(e) => setNewOffer({ ...newOffer, tags: e.target.value })}
+            />
+            <input
+              type="url"
+              placeholder="Lien externe (URL de l'offre)"
+              value={newOffer.external_url}
+              onChange={(e) => setNewOffer({ ...newOffer, external_url: e.target.value })}
+            />
+            <select value={newOffer.type} onChange={(e) => setNewOffer({ ...newOffer, type: e.target.value })} className="vue-modal-select">
+              <option value="">-- Sélectionner un type de contrat --</option>
+              <option value="cdi">CDI</option>
+              <option value="cdd">CDD</option>
+              <option value="alternance">Alternance</option>
+              <option value="mi-temps">Mi-temps</option>
+              <option value="freelance">Freelance</option>
+              <option value="stage">Stage</option>
+              <option value="benevolat">Bénévolat</option>
+            </select>
+            <input
+              type="email"
+              placeholder="Email du recruteur"
+              value={newOffer.recruiter_email}
+              onChange={(e) => setNewOffer({ ...newOffer, recruiter_email: e.target.value })}
+            />
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="number"
+                placeholder="Salaire min"
+                value={newOffer.salary_min}
+                onChange={(e) => setNewOffer({ ...newOffer, salary_min: e.target.value })}
+              />
+              <input
+                type="number"
+                placeholder="Salaire max"
+                value={newOffer.salary_max}
+                onChange={(e) => setNewOffer({ ...newOffer, salary_max: e.target.value })}
+              />
+            </div>
+
+            {createError && <p style={{ color: "red" }}>{createError}</p>}
+
+            <div className="vue-modal-actions">
+              <button onClick={createOffer} disabled={creating}>
+                {creating ? "Création..." : "Créer"}
+              </button>
+              <button onClick={() => setIsModalOpen(false)}>Annuler</button>
+            </div>
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }

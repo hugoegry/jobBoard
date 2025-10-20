@@ -14,7 +14,7 @@ const permissionsMatrix = {
   user: {
     user: {create: {restricted:  true, type: 'never'}, update: {restricted: true, type: 'own'}, delete: {restricted:  true, type: 'own'}, select: {restricted:  true, type: 'own'}},
     company: {create: {restricted:  true, type: 'never'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'never'}, select: {restricted:  false, type: 'all'}},
-    offer: {create: {restricted:  true, type: 'societyMembership'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'societyMembership'}, select: {restricted:  false, type: 'all'}},
+    offer: {create: {restricted:  false, type: 'all'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
     application: {create: {restricted:  false, type: 'all'}, update: {restricted:  true, type: 'societyMembership'}, delete: {restricted:  true, type: 'societyMembership'}, select: {restricted:  false, type: 'all'}},
     company_member: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
     company: {create: {restricted:  false, type: 'all'}, update: {restricted:  false, type: 'all'}, delete: {restricted:  false, type: 'all'}, select: {restricted:  false, type: 'all'}},
@@ -29,7 +29,7 @@ const permissionsMatrix = {
  * et "P:"/"p:" (paramètres applicatifs).
  * 
  * @param {import('express').Request} req - L'objet requête Express.
- * @param {import('express').Response} res - L'objet réponse Express.
+ * @param {import('express').Response} res - L'objet réponse Express. 
  * @returns {Object} - { a, p }
  */
 const extractParams = (req, res) => {

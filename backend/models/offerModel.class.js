@@ -4,16 +4,16 @@ export class OfferModel extends BaseModel {
     static table = 'offers';
     static tableView = 'v_offers_with_company';
 
-    static async create(data) {
-        return await this._insert(this.table, data);
+    static async create(data, returning = '*') {
+        return await this._insert(this.table, data, returning);
     }
 
     static async update(field, param) {
         return await this._update(this.table, field, param);
     }
 
-    static async delete(conditions) {
-        return await this._delete(this.table, conditions);
+    static async delete(conditions, returning = '*') {
+        return await this._delete(this.table, conditions, returning);
     }
 
     static async find(params, fields) {

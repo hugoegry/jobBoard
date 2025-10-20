@@ -3,9 +3,11 @@ import "../styles/style_vueApplication.css";
 
 export default function Applications() {
   const [applications, setApplications] = useState([]);
+  const userDataStr = sessionStorage.getItem("userobj");
+  const userData = userDataStr ? JSON.parse(userDataStr) : null;
 
   useEffect(() => {
-    fetch(`http://localhost/api/application/search?p:id_user=${sessionStorage.getItem("UserId")}`,{
+    fetch(`http://localhost/api/application/search?p:id_user=${userData.user_id})}`,{
       method: "GET",
       credentials: "include", // Inclure les cookies pour la session
     })
