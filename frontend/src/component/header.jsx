@@ -17,7 +17,8 @@ export default function Header() {
   const navigateToMyAccount = () => navigate("/MyAccount");
   const navigateToAdmin = () => navigate("/admin");
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    sessionStorage.removeItem("userobj");
     sessionStorage.removeItem("isConnected");
     sessionStorage.removeItem("userEmail");
     sessionStorage.removeItem("userobj");
@@ -27,6 +28,26 @@ export default function Header() {
     sessionStorage.removeItem("userPhone");
     setIsLoggedIn(false);
     setIsRecruter(false);
+
+    try {
+      const response = await fetch("http://localhost/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = response.json();
+
+      if (response.ok) {
+        console.log(data.message);
+      } else {
+        console.error("Erreur lors de la déconnexion :", data.error);
+      }
+    } catch (error) {
+      console.error("Erreur réseau :", error);
+    }
 
     window.dispatchEvent(new Event("storage"));
     navigate("/");
