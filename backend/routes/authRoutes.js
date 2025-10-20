@@ -9,6 +9,7 @@ router.post('/', (req, res) => ClassController.auth(req, res));
 
 router.get('/auth', (req, res) => ClassController.auth(req, res));
 router.post('/auth', (req, res) => ClassController.auth(req, res));
+router.post('/logout', (req, res) => ClassController.logout(req, res));
 
 router.get('/handshake', (req, res) => ClassController.handshakeToken(req, res));
 router.post('/handshake', (req, res) => ClassController.handshakeToken(req, res));

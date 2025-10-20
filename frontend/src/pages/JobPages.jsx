@@ -5,6 +5,8 @@ import photoEntrepriseDefault from "../asset/pointDinterrogation.png";
 function JobPages() {
   const navigate = useNavigate();
   const location = useLocation();
+  const userDataStr = sessionStorage.getItem("userobj");
+  const userData = userDataStr ? JSON.parse(userDataStr) : null;
   const [jobs, setJobs] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
   const { poste, lieu, contract } = location.state || {};
@@ -25,7 +27,7 @@ function JobPages() {
       params.push(`p:type=${encodeURIComponent(contract)}`);
     }
 
-    // Construction de l’URL finale
+    // Construction de l URL finale
     const LienFetch =
       params.length > 0 ? `${baseURL}?${params.join("&")}` : baseURL;
 
@@ -50,6 +52,10 @@ function JobPages() {
     navigate(`/offre/${encodeURIComponent(job.offers_id)}`, { state: { job } });
   };
 
+  const handleLogin = () => {
+    navigate('/connexion');
+  };
+
   return (
     <section className="SectionJob">
       <h1>Liste des jobs</h1>
@@ -63,11 +69,7 @@ function JobPages() {
           >
             <div className="ImageText">
               <img
-                src={
-                  job.company_logo
-                    ? `/asset/${job.company_logo}`
-                    : photoEntrepriseDefault
-                }
+                src={job.company_logo ? `/asset/${job.company_logo}` : photoEntrepriseDefault}
                 alt={`Logo de ${job.company_name}`}
                 className="ImgEntreprise"
               />
@@ -75,12 +77,8 @@ function JobPages() {
               <div className="Ws-DivTextJob">
                 <h2>{job.title}</h2>
                 <span>{job.company_name.toUpperCase()}</span>
-                <h4>
-                  {job.location} ({job.type})
-                </h4>
-                <h4>
-                  {job.salary.min_salary}€ - {job.salary.max_salary}€
-                </h4>
+                <h4>{job.location} ({job.type})</h4>
+                <h4>{job.salary.min_salary}€ - {job.salary.max_salary}€</h4>
               </div>
             </div>
             <div className="divAfterClick">
@@ -88,7 +86,11 @@ function JobPages() {
               <h1 className="AfterClickTitle">Description</h1>
               <p>{job.company_description}</p>
               <div className="ActionsJob">
-                <button type="button" className="PostulerBtn" onClick={(e) => handlePostuler(e, job)}>Postuler</button>
+                  {userData ? (
+                    <button type="button" className="PostulerBtn" onClick={(e) => handlePostuler(e, job)}>Postuler</button>
+                  ) : (
+                    <button type="button" className="ConnexionBtn" onClick={handleLogin}>Se connecter pour postuler</button>
+                  )}
               </div>
             </div>
           </div>

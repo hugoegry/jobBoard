@@ -1204,7 +1204,8 @@ select option {
 }
 
 /* Bouton principal "Postuler" */
-.PostulerBtn {
+.PostulerBtn,
+.ConnexionBtn {
   appearance: none;
   -webkit-appearance: none;
   display: inline-flex;
@@ -1275,3 +1276,4 @@ select option {
     justify-content: center;
   }
 }
+

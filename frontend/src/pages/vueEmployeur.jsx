@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/style_vueEmployeur.css";
-import { fetchList, createEntity, deleteEntity } from "../api";
+import { fetchList, createEntity, deleteEntity, updateEntity } from "../api";
 
 export default function VueEmployeur() {
   const [offers, setOffers] = useState([]);
@@ -28,6 +28,10 @@ export default function VueEmployeur() {
   });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editOfferId, setEditOfferId] = useState(null);
+  const [originalOffer, setOriginalOffer] = useState({});
 
   useEffect(() => {
     const userDataStr = sessionStorage.getItem("userobj");
@@ -111,7 +115,7 @@ export default function VueEmployeur() {
     }
   };
   
-  //-------------------- SUPPRESSION OFFRE --------------------
+  //-------------------- sup offre --------------------
   const deleteOffer = async (offerId) => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) return;
     try {
@@ -125,6 +129,27 @@ export default function VueEmployeur() {
       console.error(err);
       alert("Impossible de supprimer l’offre : " + err.message);
     }
+  };
+
+  //-------------------- update offre --------------------
+  const handleEditOffer = (offer) => {
+    setIsEditing(true);
+    setEditOfferId(offer.offers_id);
+    setOriginalOffer(offer);
+
+    setNewOffer({
+      title: offer.title || "",
+      description: offer.description || "",
+      location: offer.location || "",
+      tags: offer.tags || "",
+      external_url: offer.external_url || "",
+      type: offer.type || "",
+      collect_application: offer.collect_application ?? true,
+      recruiter_email: offer.recruiter_email || "",
+      salary_min: offer.salary?.min_salary || "",
+      salary_max: offer.salary?.max_salary || "",
+    });
+    setIsModalOpen(true);
   };
 
   const toggleApplications = async (offerId) => { // Toggle pour voir les candidatures
@@ -149,6 +174,67 @@ export default function VueEmployeur() {
       } finally {
         setLoadingApps((prev) => ({ ...prev, [offerId]: false }));
       }
+    }
+  };
+
+  //-------------------- update offre --------------------
+  const updateOffer = async () => {
+    if (!editOfferId) return;
+    try {
+      const changedFields = Object.entries(newOffer).reduce((acc, [key, value]) => {
+        if (value !== originalOffer[key]) acc[key] = value;
+        return acc;
+      }, {});
+
+      if (Object.keys(changedFields).length === 0) {
+        alert("Aucune modification détectée.");
+        return;
+      }
+
+      await updateEntity("offer", { id: editOfferId }, changedFields);
+
+      // mise a jour loc
+      setOffers((prev) =>
+        prev.map((offer) => {
+          if (offer.offers_id != editOfferId) return offer;
+
+          const updatedOffer = { ...offer, ...changedFields };
+
+          // Gérer le salary
+          if (changedFields.salary_min || changedFields.salary_max) {
+            updatedOffer.salary = {
+              min_salary: Number(changedFields.salary_min ?? offer.salary?.min_salary ?? 0),
+              max_salary: Number(changedFields.salary_max ?? offer.salary?.max_salary ?? 0),
+            };
+            delete updatedOffer.salary_min;
+            delete updatedOffer.salary_max;
+          }
+
+          return updatedOffer;
+        })
+      );
+
+      // reset
+      setIsModalOpen(false);
+      setIsEditing(false);
+      setEditOfferId(null);
+      setOriginalOffer({});
+      setNewOffer({
+        company_id: "",
+        title: "",
+        description: "",
+        location: "",
+        tags: "",
+        external_url: "",
+        type: "",
+        collect_application: true,
+        recruiter_email: "",
+        salary_min: "",
+        salary_max: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la mise à jour de l’offre : " + err.message);
     }
   };
 
@@ -239,12 +325,13 @@ export default function VueEmployeur() {
               <label><input type="checkbox" checked={filters[offer.offers_id]?.rejected || false} onChange={() => handleFilterChange(offer.offers_id, "rejected")}/>Refusées</label>
               <label><input type="checkbox" checked={filters[offer.offers_id]?.pending || false} onChange={() => handleFilterChange(offer.offers_id, "pending")}/>En attente</label>
             </div>
-            <h2 className="vue-offer-title">{offer.company_name} - {offer.title}</h2>
+            <h2 className="vue-offer-title">{offer.company_name || offers[0].company_name} - {offer.title}</h2>
             <p className="vue-offer-company">{offer.company}</p>
             <p className="vue-offer-location">{offer.location}</p>
             <p className="vue-offer-description">{offer.company_description}</p>
 
             <button className="vue-toggle-btn" onClick={() => toggleApplications(offer.offers_id)}>{expandedOffers[offer.offers_id] ? "Masquer les candidatures" : "Voir les candidatures"}</button>
+            <button className="vue-edit-btn" onClick={() => handleEditOffer(offer)} style={{ backgroundColor: "orange", color: "white", marginTop: "8px" }}>Modifier l’offre</button>
             <button className="vue-delete-btn" onClick={() => deleteOffer(offer.offers_id)} style={{ backgroundColor: "darkred", color: "white", marginTop: "8px" }}>Supprimer l’offre</button>
               {console.log('applications globales', applications)}
             {expandedOffers[offer.offers_id] && (
@@ -287,7 +374,7 @@ export default function VueEmployeur() {
       {isModalOpen && (
         <div className="vue-modal-overlay">
           <div className="vue-modal">
-            <h3>Créer une nouvelle offre</h3>
+            <h3>{isEditing ? "Modifier l’offre" : "Créer une nouvelle offre"}</h3>
 
             <input
               type="text"
@@ -353,9 +440,7 @@ export default function VueEmployeur() {
             {createError && <p style={{ color: "red" }}>{createError}</p>}
 
             <div className="vue-modal-actions">
-              <button onClick={createOffer} disabled={creating}>
-                {creating ? "Création..." : "Créer"}
-              </button>
+              <button onClick={isEditing ? updateOffer : createOffer} disabled={creating}>{creating ? (isEditing ? "Mise à jour..." : "Création...") : (isEditing ? "Mettre à jour" : "Créer")}</button>
               <button onClick={() => setIsModalOpen(false)}>Annuler</button>
             </div>
           </div>

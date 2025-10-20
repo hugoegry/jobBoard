@@ -296,6 +296,21 @@ export class AuthController extends BaseController {
     }
   }
 
+  static async logout(req, res) {
+    try {
+      if (req.session) req.session.destroy();
+      res.clearCookie('session_token', { path: '/' });
+      // res.clearCookie('session_token', {
+      //   httpOnly: true,
+      //   secure: false,
+      //   sameSite: 'Strict',
+      //   path: '/', 
+      // });
+      return res.status(200).json({ success: true, message: 'Déconnexion réussie' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   // return res.status(403).json({ error: 'Utilisateur non autorisé', code: 'ERROR_USER_ACCESS_DENIED' });  // --->>>> code <<<<--- \\
   // return res.status(401).json({ error: 'Utilisateur non connecté', code: 'ERROR_USER_NOT_CONNECTED' }); //  --->>>> code <<<<---  \\
