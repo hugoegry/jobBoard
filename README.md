@@ -493,3 +493,28 @@ CREATE INDEX idx_applications_user ON applications(user_id);
 <h3>Rewann Tannou <a href="https://github.com/RewannTannou"><img src="https://img.shields.io/badge/Git%20Hub-RewannTannou-blue?style=social&logo=refinedgithub"></a></h3>
 
 <h3>Manech Laguens <a href="https://github.com/Manech-Laguens"><img src="https://img.shields.io/badge/Git%20Hub-Manech Laguens-blue?style=social&logo=refinedgithub"></a></h3>
+
+
+<!--HEG_GIT_HUB_API
+[
+  {
+    "name": "JS / Expres / React Job Board",
+    "desc": "JobBoard is a full-stack web application implementing a modern RESTful architecture with JWT-based authentication. The platform enables bidirectional interaction between recruiters and job seekers through a scalable, secure infrastructure.",
+    "date": "2025-10-08T14:00:00Z",
+    "link": {
+      "codeReview": "https://github.com/hugoegry/DeezerPlayer",
+      "show": null
+    },
+    "preview": {
+      "p1": {
+        "name": "miniatureHangManGamePython",
+        "ex": "jpg"
+      },
+      "p2": {
+        "name": "hangGameImg1",
+        "ex": "jpg"
+      }
+    }
+  }
+]
+-->
