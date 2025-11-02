@@ -502,7 +502,7 @@ CREATE INDEX idx_applications_user ON applications(user_id);
     "desc": "JobBoard is a full-stack web application implementing a modern RESTful architecture with JWT-based authentication. The platform enables bidirectional interaction between recruiters and job seekers through a scalable, secure infrastructure.",
     "date": "2025-10-08T14:00:00Z",
     "link": {
-      "codeReview": "https://github.com/hugoegry/DeezerPlayer",
+      "codeReview": "https://github.com/hugoegry/jobBoard",
       "show": null
     },
     "preview": {
