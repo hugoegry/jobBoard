@@ -507,11 +507,7 @@ CREATE INDEX idx_applications_user ON applications(user_id);
     },
     "preview": {
       "p1": {
-        "name": "miniatureHangManGamePython",
-        "ex": "jpg"
-      },
-      "p2": {
-        "name": "hangGameImg1",
+        "name": "miniatureJobBoard",
         "ex": "jpg"
       }
     }
